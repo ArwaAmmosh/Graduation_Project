@@ -5,7 +5,7 @@ namespace Graduation_Project.Models
     public class UserInformation
     {
         [Key]
-        public int UserID { get; set; }
+        public int UserInformationId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Government { get; set; }
@@ -16,8 +16,11 @@ namespace Graduation_Project.Models
         public byte[] BackIdImage { get; set; }
         public byte[] CollegeCardFrontImage { get; set; }
         public byte[] CollegeCardBackImage { get; set; }
+        public byte[] PersonalImage { get; set; }
         public string NationalId { get; set; }
-        public List<Tool> tool { get; set; }
-        public List<FavoriteTools> favoriteTools { get; set; }
+        public List<Tool> Tool { get; set; }
+        public List<FavoriteTool> FavoriteTool { get; set; }
+         
+        
     }
 }

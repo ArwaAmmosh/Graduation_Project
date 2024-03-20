@@ -14,6 +14,6 @@ namespace Graduation_Project.Models
         public string? PasswordResetToken { get; set; }
         public DateTime? ResetTokenExpire { get; set; }
 
-
+    
     }
 }

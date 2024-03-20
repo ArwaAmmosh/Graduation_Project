@@ -3,12 +3,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Graduation_Project.Models
 {
-    public class ToolPhotos
+    public class ToolPhoto
     {
         [Key]
-        [ForeignKey("Tool")]
-        public int Tool_Id { get; set; }
+        public int ToolPhotoId { get; set; }
+
         public byte[] ToolImages { get; set; }
-        public Tool tool { get; set; }
+
+        [ForeignKey("Tool")]
+        public int ToolId { get; set; }
+        public Tool Tool { get; set; }
     }
 }

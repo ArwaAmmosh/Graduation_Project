@@ -3,16 +3,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Graduation_Project.Models
 {
-    [PrimaryKey("UserId", "ToolId")]
+    
 
-    public class FavoriteTools
+    public class FavoriteTool
     {
+        [Key]
+        public int FavoriteToolId { get; set; }
 
         [ForeignKey("UserInformation")]
-        public int UserId { get; set; }
+        public int UserInformationId { get; set; }
+        public UserInformation UserInformation { get; set; }
+
         [ForeignKey("Tool")]
         public int ToolId { get; set; }
-        public UserInformation user { get; set; }
-        public Tool tool { get; set; }
+        public Tool Tool { get; set; }
     }
 }

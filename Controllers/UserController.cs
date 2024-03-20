@@ -10,15 +10,15 @@ namespace Graduation.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly UNITOOLContext _context;
-        public UserController(UNITOOLContext context)
+        private readonly UNITOOLDbContext _context;
+        public UserController(UNITOOLDbContext context)
         {
             context = context;
         }
         [HttpPost("register")]
         public async Task<IActionResult> Regiester (UserRegiesteration request)
         {
-            if (_context.User.Any(u => u.Email == request.Email)) { 
+            if (_context.Users.Any(u => u.Email == request.Email)) { 
                     
                 return BadRequest("User Already exists");
             }
@@ -30,7 +30,7 @@ namespace Graduation.Controllers
                 PasswordSalt = PasswordSalt,
                 verficationToken = CreateRandomToken()
             };
-            _context.User.Add(user);
+            _context.Users.Add(user);
             await _context.SaveChangesAsync();
             return Ok("User Successfully Created.");
 

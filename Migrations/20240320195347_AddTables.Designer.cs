@@ -11,9 +11,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Graduation_Project.Migrations
 {
-    [DbContext(typeof(UNITOOLContext))]
-    [Migration("20240317230524_v1")]
-    partial class v1
+    [DbContext(typeof(UNITOOLDbContext))]
+    [Migration("20240320195347_AddTables")]
+    partial class AddTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,15 +25,18 @@ namespace Graduation_Project.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Graduation_Project.Models.FavoriteTools", b =>
+            modelBuilder.Entity("Graduation_Project.Models.FavoriteTool", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("UserInformationId")
                         .HasColumnType("int");
 
                     b.Property<int>("ToolId")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId", "ToolId");
+                    b.Property<int>("FavoriteToolId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserInformationId", "ToolId");
 
                     b.HasIndex("ToolId");
 
@@ -42,17 +45,21 @@ namespace Graduation_Project.Migrations
 
             modelBuilder.Entity("Graduation_Project.Models.Tool", b =>
                 {
-                    b.Property<int>("ToolID")
+                    b.Property<int>("ToolId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ToolID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ToolId"));
 
                     b.Property<string>("Acadmicyear")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("College")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -75,36 +82,36 @@ namespace Graduation_Project.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("UserInformationId")
                         .HasColumnType("int");
 
-                    b.HasKey("ToolID");
+                    b.HasKey("ToolId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserInformationId");
 
-                    b.ToTable("Tool");
+                    b.ToTable("Tools");
                 });
 
-            modelBuilder.Entity("Graduation_Project.Models.ToolPhotos", b =>
+            modelBuilder.Entity("Graduation_Project.Models.ToolPhoto", b =>
                 {
-                    b.Property<int>("Tool_Id")
+                    b.Property<int>("ToolPhotoId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Tool_Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ToolPhotoId"));
 
-                    b.Property<int>("ToolID")
+                    b.Property<int>("ToolId")
                         .HasColumnType("int");
 
                     b.Property<byte[]>("ToolImages")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
-                    b.HasKey("Tool_Id");
+                    b.HasKey("ToolPhotoId");
 
-                    b.HasIndex("ToolID");
+                    b.HasIndex("ToolId");
 
-                    b.ToTable("Photo");
+                    b.ToTable("Photos");
                 });
 
             modelBuilder.Entity("Graduation_Project.Models.User", b =>
@@ -141,16 +148,16 @@ namespace Graduation_Project.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Graduation_Project.Models.UserInformation", b =>
                 {
-                    b.Property<int>("UserID")
+                    b.Property<int>("UserInformationId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserInformationId"));
 
                     b.Property<string>("AcadmicYear")
                         .IsRequired()
@@ -192,66 +199,72 @@ namespace Graduation_Project.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<byte[]>("PersonalImage")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserID");
+                    b.HasKey("UserInformationId");
 
                     b.ToTable("UsersInformations");
                 });
 
-            modelBuilder.Entity("Graduation_Project.Models.FavoriteTools", b =>
+            modelBuilder.Entity("Graduation_Project.Models.FavoriteTool", b =>
                 {
-                    b.HasOne("Graduation_Project.Models.Tool", "tool")
-                        .WithMany("favoriteTools")
+                    b.HasOne("Graduation_Project.Models.Tool", "Tool")
+                        .WithMany("FavoriteTool")
                         .HasForeignKey("ToolId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Graduation_Project.Models.UserInformation", "user")
-                        .WithMany("favoriteTools")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("Graduation_Project.Models.UserInformation", "UserInformation")
+                        .WithMany("FavoriteTool")
+                        .HasForeignKey("UserInformationId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("tool");
+                    b.Navigation("Tool");
 
-                    b.Navigation("user");
+                    b.Navigation("UserInformation");
                 });
 
             modelBuilder.Entity("Graduation_Project.Models.Tool", b =>
                 {
-                    b.HasOne("Graduation_Project.Models.UserInformation", "user")
-                        .WithMany("tool")
-                        .HasForeignKey("UserId")
+                    b.HasOne("Graduation_Project.Models.UserInformation", "UserInformation")
+                        .WithMany("Tool")
+                        .HasForeignKey("UserInformationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("user");
+                    b.Navigation("UserInformation");
                 });
 
-            modelBuilder.Entity("Graduation_Project.Models.ToolPhotos", b =>
+            modelBuilder.Entity("Graduation_Project.Models.ToolPhoto", b =>
                 {
-                    b.HasOne("Graduation_Project.Models.Tool", "tool")
-                        .WithMany()
-                        .HasForeignKey("ToolID")
+                    b.HasOne("Graduation_Project.Models.Tool", "Tool")
+                        .WithMany("ToolPhoto")
+                        .HasForeignKey("ToolId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("tool");
+                    b.Navigation("Tool");
                 });
 
             modelBuilder.Entity("Graduation_Project.Models.Tool", b =>
                 {
-                    b.Navigation("favoriteTools");
+                    b.Navigation("FavoriteTool");
+
+                    b.Navigation("ToolPhoto");
                 });
 
             modelBuilder.Entity("Graduation_Project.Models.UserInformation", b =>
                 {
-                    b.Navigation("favoriteTools");
+                    b.Navigation("FavoriteTool");
 
-                    b.Navigation("tool");
+                    b.Navigation("Tool");
                 });
 #pragma warning restore 612, 618
         }

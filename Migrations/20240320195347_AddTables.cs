@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Graduation_Project.Migrations
 {
     /// <inheritdoc />
-    public partial class v1 : Migration
+    public partial class AddTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "User",
+                name: "Users",
                 columns: table => new
                 {
                     UserId = table.Column<int>(type: "int", nullable: false)
@@ -27,14 +27,14 @@ namespace Graduation_Project.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_User", x => x.UserId);
+                    table.PrimaryKey("PK_Users", x => x.UserId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "UsersInformations",
                 columns: table => new
                 {
-                    UserID = table.Column<int>(type: "int", nullable: false)
+                    UserInformationId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -46,36 +46,38 @@ namespace Graduation_Project.Migrations
                     BackIdImage = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     CollegeCardFrontImage = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     CollegeCardBackImage = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    PersonalImage = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     NationalId = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UsersInformations", x => x.UserID);
+                    table.PrimaryKey("PK_UsersInformations", x => x.UserInformationId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tool",
+                name: "Tools",
                 columns: table => new
                 {
-                    ToolID = table.Column<int>(type: "int", nullable: false)
+                    ToolId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RentTime = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<int>(type: "int", nullable: false),
                     Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    College = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Acadmicyear = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     University = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    UserInformationId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tool", x => x.ToolID);
+                    table.PrimaryKey("PK_Tools", x => x.ToolId);
                     table.ForeignKey(
-                        name: "FK_Tool_UsersInformations_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Tools_UsersInformations_UserInformationId",
+                        column: x => x.UserInformationId,
                         principalTable: "UsersInformations",
-                        principalColumn: "UserID",
+                        principalColumn: "UserInformationId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -83,43 +85,43 @@ namespace Graduation_Project.Migrations
                 name: "FavoriteTool",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserInformationId = table.Column<int>(type: "int", nullable: false),
+                    ToolId = table.Column<int>(type: "int", nullable: false),
+                    FavoriteToolId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FavoriteTool", x => new { x.UserInformationId, x.ToolId });
+                    table.ForeignKey(
+                        name: "FK_FavoriteTool_Tools_ToolId",
+                        column: x => x.ToolId,
+                        principalTable: "Tools",
+                        principalColumn: "ToolId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FavoriteTool_UsersInformations_UserInformationId",
+                        column: x => x.UserInformationId,
+                        principalTable: "UsersInformations",
+                        principalColumn: "UserInformationId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Photos",
+                columns: table => new
+                {
+                    ToolPhotoId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ToolImages = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     ToolId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FavoriteTool", x => new { x.UserId, x.ToolId });
+                    table.PrimaryKey("PK_Photos", x => x.ToolPhotoId);
                     table.ForeignKey(
-                        name: "FK_FavoriteTool_Tool_ToolId",
+                        name: "FK_Photos_Tools_ToolId",
                         column: x => x.ToolId,
-                        principalTable: "Tool",
-                        principalColumn: "ToolID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_FavoriteTool_UsersInformations_UserId",
-                        column: x => x.UserId,
-                        principalTable: "UsersInformations",
-                        principalColumn: "UserID",
-                        onDelete: ReferentialAction.NoAction);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Photo",
-                columns: table => new
-                {
-                    Tool_Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ToolImages = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    ToolID = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Photo", x => x.Tool_Id);
-                    table.ForeignKey(
-                        name: "FK_Photo_Tool_ToolID",
-                        column: x => x.ToolID,
-                        principalTable: "Tool",
-                        principalColumn: "ToolID",
+                        principalTable: "Tools",
+                        principalColumn: "ToolId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -129,14 +131,14 @@ namespace Graduation_Project.Migrations
                 column: "ToolId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Photo_ToolID",
-                table: "Photo",
-                column: "ToolID");
+                name: "IX_Photos_ToolId",
+                table: "Photos",
+                column: "ToolId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tool_UserId",
-                table: "Tool",
-                column: "UserId");
+                name: "IX_Tools_UserInformationId",
+                table: "Tools",
+                column: "UserInformationId");
         }
 
         /// <inheritdoc />
@@ -146,13 +148,13 @@ namespace Graduation_Project.Migrations
                 name: "FavoriteTool");
 
             migrationBuilder.DropTable(
-                name: "Photo");
+                name: "Photos");
 
             migrationBuilder.DropTable(
-                name: "User");
+                name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Tool");
+                name: "Tools");
 
             migrationBuilder.DropTable(
                 name: "UsersInformations");
