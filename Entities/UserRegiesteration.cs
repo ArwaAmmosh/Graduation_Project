@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Graduation_Project.Entities
+﻿namespace Graduation_Project.Entities
 {
     public class UserRegiesteration
     {

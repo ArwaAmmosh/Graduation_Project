@@ -33,10 +33,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\User\commands\Handlers\" />
     <Folder Include="Features\User\Queries\Handlers\" />
     <Folder Include="Features\User\Queries\Models\" />
-    <Folder Include="SharedResource\" />
   </ItemGroup>
 
 </Project>

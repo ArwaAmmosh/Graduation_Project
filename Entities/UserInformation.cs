@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Graduation_Project.Entities
+﻿namespace Graduation_Project.Entities
 {
-    public class UserInformation 
+    public class UserInformation
     {
         [Key]
         public int UserInformationId { get; set; }
@@ -20,7 +18,7 @@ namespace Graduation_Project.Entities
         public string NationalId { get; set; }
         public List<Tool> Tool { get; set; }
         public List<FavoriteTool> FavoriteTool { get; set; }
-         
-        
+
+
     }
 }

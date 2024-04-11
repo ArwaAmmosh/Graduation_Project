@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
 
 namespace Graduation_Project.Entities
 {
@@ -12,7 +11,7 @@ namespace Graduation_Project.Entities
         public string RentTime { get; set; }
         public int Price { get; set; }
         public string Category { get; set; }
-         
+
         public string College { get; set; }
         public string Acadmicyear { get; set; }
         public string University { get; set; }

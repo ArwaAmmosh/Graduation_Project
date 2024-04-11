@@ -1,7 +1,4 @@
-﻿
-using Graduation_Project.Entities;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 
 namespace Graduation.Controllers
@@ -15,33 +12,33 @@ namespace Graduation.Controllers
         {
             _context = context;
         }
-      /* [HttpPost("register")]
-        public async Task<IActionResult> Regiester (UserRegiesteration request)
-        {
-            if (_context.Users.Any(u => u.Email == request.Email)) { 
-                    
-                return BadRequest("User Already exists");
-            }
-            CreatePasswordHash(request.Password,out byte[] PasswordHash ,out byte[] PasswordSalt);
-            var user = new User
-            {
-                Email = request.Email,
-                PasswordHash = PasswordHash,
-                PasswordSalt = PasswordSalt,
-                verficationToken = CreateRandomToken()
-            };
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-            return Ok("User Successfully Created.");
+        /* [HttpPost("register")]
+          public async Task<IActionResult> Regiester (UserRegiesteration request)
+          {
+              if (_context.Users.Any(u => u.Email == request.Email)) { 
 
-        }*/
+                  return BadRequest("User Already exists");
+              }
+              CreatePasswordHash(request.Password,out byte[] PasswordHash ,out byte[] PasswordSalt);
+              var user = new User
+              {
+                  Email = request.Email,
+                  PasswordHash = PasswordHash,
+                  PasswordSalt = PasswordSalt,
+                  verficationToken = CreateRandomToken()
+              };
+              _context.Users.Add(user);
+              await _context.SaveChangesAsync();
+              return Ok("User Successfully Created.");
+
+          }*/
         //Encoding Password
-        private void CreatePasswordHash(string Password,out byte[] PasswordHash,out byte[] PasswordSalt)
+        private void CreatePasswordHash(string Password, out byte[] PasswordHash, out byte[] PasswordSalt)
         {
-            using (var hmac=new HMACSHA512())
+            using (var hmac = new HMACSHA512())
             {
                 PasswordSalt = hmac.Key;
-                PasswordHash=hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(Password));
+                PasswordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(Password));
             }
         }
         //Create Random Token

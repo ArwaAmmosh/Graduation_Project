@@ -1,10 +1,10 @@
+global using Graduation_Project.Entities;
 global using Microsoft.EntityFrameworkCore;
 global using System.ComponentModel.DataAnnotations;
-global using Graduation_Project.Entities;
 using Graduation_Project.Helpers;
-using System.Configuration;
-using Microsoft.Extensions.Hosting;
 using Graduation_Project.Services;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,8 +17,24 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddServiceRegisteration();
 builder.Services.AddDbContext<UNITOOLDbContext>();
-builder.Services.Configure <JWT> (builder.Configuration.GetSection("JWT"));
+builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
+#region Localization
+builder.Services.AddControllersWithViews();
+builder.Services.AddLocalization(opt => opt.ResourcesPath = "");
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    List<CultureInfo> supportedCulture = new List<CultureInfo> {
+        new CultureInfo("en-US"),
+        new CultureInfo("fr-FR"),
+        new CultureInfo("ar-EG"),
+        new CultureInfo("de-DE")
 
+    };
+    options.DefaultRequestCulture = new RequestCulture("en-US");
+    options.SupportedCultures = supportedCulture;
+    options.SupportedUICultures = supportedCulture;
+});
+#endregion
 
 
 var app = builder.Build();

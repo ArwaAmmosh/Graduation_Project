@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Graduation_Project.Features.User.commands.Models
 {
-    public class AddUserCommand:IRequest<Response<string>>
+    public class AddUserCommand : IRequest<Response<string>>
     {
         public string FullName { get; set; }
         public string Password { get; set; }

@@ -1,7 +1,5 @@
 ﻿using Graduation_Project.Entities.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNetCore.Identity;
-using IdentityRole = Microsoft.AspNet.Identity.EntityFramework.IdentityRole;
 
 namespace Graduation_Project.Services
 {
