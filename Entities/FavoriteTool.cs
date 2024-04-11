@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Graduation_Project.Models
+namespace Graduation_Project.Entities
 {
     
 

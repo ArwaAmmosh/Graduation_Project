@@ -1,14 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
-namespace Graduation_Project.Models
+﻿using Graduation_Project.Entities.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection;
+
+namespace Graduation_Project.Entities
 {
-    public class UNITOOLDbContext :DbContext
+    public class UNITOOLDbContext : IdentityDbContext<User, IdentityRole<int>, int, IdentityUserClaim<int>, IdentityUserRole<int>, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
         public UNITOOLDbContext (DbContextOptions<UNITOOLDbContext> options) : base(options) { }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=.;Database=UNITOOL;Trusted_Connection=True;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=DESKTOP-A0LMSG6\\SD;Database=UNITOOL;Trusted_Connection=True;TrustServerCertificate=True;");
         }
-        public DbSet<User> Users { get; set; }
+        public DbSet<User> User { get; set; }
         public DbSet<UserInformation> UsersInformations { get; set; }
         public DbSet<Tool> Tools { get; set; }
         public DbSet<ToolPhoto> Photos { get; set; }
@@ -59,6 +64,7 @@ namespace Graduation_Project.Models
 
 
             base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }
     

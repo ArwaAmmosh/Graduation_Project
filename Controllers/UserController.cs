@@ -1,5 +1,5 @@
 ﻿
-using Graduation_Project.Models;
+using Graduation_Project.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
@@ -13,9 +13,9 @@ namespace Graduation.Controllers
         private readonly UNITOOLDbContext _context;
         public UserController(UNITOOLDbContext context)
         {
-            context = context;
+            _context = context;
         }
-        [HttpPost("register")]
+      /* [HttpPost("register")]
         public async Task<IActionResult> Regiester (UserRegiesteration request)
         {
             if (_context.Users.Any(u => u.Email == request.Email)) { 
@@ -34,7 +34,7 @@ namespace Graduation.Controllers
             await _context.SaveChangesAsync();
             return Ok("User Successfully Created.");
 
-        }
+        }*/
         //Encoding Password
         private void CreatePasswordHash(string Password,out byte[] PasswordHash,out byte[] PasswordSalt)
         {

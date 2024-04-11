@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Graduation_Project.Models
+namespace Graduation_Project.Entities
 {
-    public class UserInformation
+    public class UserInformation 
     {
         [Key]
         public int UserInformationId { get; set; }
