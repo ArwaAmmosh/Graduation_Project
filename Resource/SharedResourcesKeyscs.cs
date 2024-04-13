@@ -8,10 +8,9 @@
         public const string NotEmpty = "Shoultn't be Empty";
         public const string MaxLengthIs100 = "MaxLength Is 100";
         public const string PasswordNotEqualConfirmPassword = "Password NotEqual ConfirmPassword";
-
-
-
-
+        public const string UserNameIsExist = "User Name Is Exist";
+        public const string EmailIsExist = "Email Is Exist";
+        public const string FailedToAddUser = "Failed To Add User";
 
     }
 }

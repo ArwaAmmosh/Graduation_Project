@@ -1,10 +1,15 @@
 global using Graduation_Project.Entities;
 global using Microsoft.EntityFrameworkCore;
 global using System.ComponentModel.DataAnnotations;
-using Graduation_Project.Helpers;
-using Graduation_Project.Services;
-using Microsoft.AspNetCore.Localization;
-using System.Globalization;
+global using Graduation_Project.Helpers;
+global using Graduation_Project.Services;
+global using Microsoft.AspNetCore.Localization;
+global using System.Globalization;
+global using MediatR;
+global using AutoMapper;
+global using System.Net;
+global using Microsoft.AspNetCore.Identity;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
