@@ -38,7 +38,7 @@ namespace Graduation_Project.Features.Users.commands.Validatitors
                .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);
             RuleFor(x => x.ConfirmPassword)
                 .Matches(x => x.Password).WithMessage(_localizer[SharedResourcesKeys.PasswordNotEqualConfirmPassword]);
-            RuleFor(x => x.University)
+            RuleFor(x => x.Univserity)
                 .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
                 .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);
 

@@ -1,6 +1,4 @@
-﻿using MediatR;
-
-namespace Graduation_Project.Features.Users.commands.Models
+﻿namespace Graduation_Project.Features.Users.commands.Models
 {
     public class AddUserCommand : IRequest<Graduation_Project.Bases.Response<string>>
     {
@@ -20,7 +18,7 @@ namespace Graduation_Project.Features.Users.commands.Models
         public string ConfirmPassword { get; set; }
 #pragma warning restore CS8618 // Non-nullable property 'ConfirmPassword' must contain a non-null value when exiting constructor. Consider declaring the property as nullable.
 #pragma warning disable CS8618 // Non-nullable property 'University' must contain a non-null value when exiting constructor. Consider declaring the property as nullable.
-        public string University { get; set; }
+        public string Univserity { get; set; }
 #pragma warning restore CS8618 // Non-nullable property 'University' must contain a non-null value when exiting constructor. Consider declaring the property as nullable.
     }
 }

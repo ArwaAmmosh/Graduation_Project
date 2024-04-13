@@ -34,15 +34,16 @@ namespace Graduation_Project.Features.Users.commands.Handlers
         public async Task<Bases.Response<string>> Handle(AddUserCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
-            if (user == null)
+            if (user != null)
             {
                 return BadRequest<string>(_sharedResource[SharedResourcesKeys.EmailIsExist]);
             }
             var identityUser = _mapper.Map<User>(request);
+            identityUser.UserName = identityUser.FirstName + identityUser.LastName;
             var creatResult = await _userManager.CreateAsync(identityUser, request.Password);
             if (!creatResult.Succeeded)
             {
-                return BadRequest<string>(_sharedResource[SharedResourcesKeys.FailedToAddUser]);
+                return BadRequest<string>(creatResult.Errors.FirstOrDefault().Description);
             }
             return Created("");
             #endregion

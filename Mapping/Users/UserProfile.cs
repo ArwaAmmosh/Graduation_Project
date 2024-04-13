@@ -2,9 +2,9 @@
 
 namespace Graduation_Project.Mapping.Users
 {
-    public partial class UserProfile : Profile
+    public partial class MappingProfile : Profile
     {
-        public UserProfile()
+        public MappingProfile()
         {
             AddUserMapping();
         }
