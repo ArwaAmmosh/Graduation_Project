@@ -24,16 +24,13 @@ namespace Graduation_Project.Migrations
 
             modelBuilder.Entity("Graduation_Project.Entities.FavoriteTool", b =>
                 {
-                    b.Property<int>("UserInformationId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.Property<int>("ToolId")
                         .HasColumnType("int");
 
-                    b.Property<int>("FavoriteToolId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserInformationId", "ToolId");
+                    b.HasKey("UserId", "ToolId");
 
                     b.HasIndex("ToolId");
 
@@ -48,8 +45,28 @@ namespace Graduation_Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AcadmicYear")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<byte[]>("BackIdImage")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("College")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("CollegeCardBackImage")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("CollegeCardFrontImage")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -62,7 +79,23 @@ namespace Graduation_Project.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("FrontIdImage")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Government")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -71,6 +104,10 @@ namespace Graduation_Project.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NationalId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -81,6 +118,14 @@ namespace Graduation_Project.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("PersonalImage")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
@@ -155,12 +200,12 @@ namespace Graduation_Project.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserInformationId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("ToolId");
 
-                    b.HasIndex("UserInformationId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Tools");
                 });
@@ -185,67 +230,6 @@ namespace Graduation_Project.Migrations
                     b.HasIndex("ToolId");
 
                     b.ToTable("Photos");
-                });
-
-            modelBuilder.Entity("Graduation_Project.Entities.UserInformation", b =>
-                {
-                    b.Property<int>("UserInformationId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserInformationId"));
-
-                    b.Property<string>("AcadmicYear")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("BackIdImage")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("College")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("CollegeCardBackImage")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<byte[]>("CollegeCardFrontImage")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("FrontIdImage")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("Government")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NationalId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("PersonalImage")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserInformationId");
-
-                    b.ToTable("UsersInformations");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
@@ -389,26 +373,26 @@ namespace Graduation_Project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Graduation_Project.Entities.UserInformation", "UserInformation")
+                    b.HasOne("Graduation_Project.Entities.Identity.User", "User")
                         .WithMany("FavoriteTool")
-                        .HasForeignKey("UserInformationId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Tool");
 
-                    b.Navigation("UserInformation");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Graduation_Project.Entities.Tool", b =>
                 {
-                    b.HasOne("Graduation_Project.Entities.UserInformation", "UserInformation")
+                    b.HasOne("Graduation_Project.Entities.Identity.User", "User")
                         .WithMany("Tool")
-                        .HasForeignKey("UserInformationId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("UserInformation");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Graduation_Project.Entities.ToolPhoto", b =>
@@ -473,18 +457,18 @@ namespace Graduation_Project.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Graduation_Project.Entities.Identity.User", b =>
+                {
+                    b.Navigation("FavoriteTool");
+
+                    b.Navigation("Tool");
+                });
+
             modelBuilder.Entity("Graduation_Project.Entities.Tool", b =>
                 {
                     b.Navigation("FavoriteTool");
 
                     b.Navigation("ToolPhoto");
-                });
-
-            modelBuilder.Entity("Graduation_Project.Entities.UserInformation", b =>
-                {
-                    b.Navigation("FavoriteTool");
-
-                    b.Navigation("Tool");
                 });
 #pragma warning restore 612, 618
         }

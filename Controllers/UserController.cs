@@ -1,51 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography;
+﻿using Graduation_Project.Bases;
+using Graduation_Project.Features.Users.commands.Models;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using System.Drawing.Text;
 
 namespace Graduation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController  : AppControllerBase
     {
-        private readonly UNITOOLDbContext _context;
-        public UserController(UNITOOLDbContext context)
+        [HttpPost("User/Create")]
+        public async Task<IActionResult> Create([FromBody] AddUserCommand command)
         {
-            _context = context;
-        }
-        /* [HttpPost("register")]
-          public async Task<IActionResult> Regiester (UserRegiesteration request)
-          {
-              if (_context.Users.Any(u => u.Email == request.Email)) { 
-
-                  return BadRequest("User Already exists");
-              }
-              CreatePasswordHash(request.Password,out byte[] PasswordHash ,out byte[] PasswordSalt);
-              var user = new User
-              {
-                  Email = request.Email,
-                  PasswordHash = PasswordHash,
-                  PasswordSalt = PasswordSalt,
-                  verficationToken = CreateRandomToken()
-              };
-              _context.Users.Add(user);
-              await _context.SaveChangesAsync();
-              return Ok("User Successfully Created.");
-
-          }*/
-        //Encoding Password
-        private void CreatePasswordHash(string Password, out byte[] PasswordHash, out byte[] PasswordSalt)
-        {
-            using (var hmac = new HMACSHA512())
-            {
-                PasswordSalt = hmac.Key;
-                PasswordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(Password));
-            }
-        }
-        //Create Random Token
-        private string CreateRandomToken()
-        {
-            return Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
+            var response = await Mediator.Send(command);
+            return NewResult(response);
         }
     }
-
 }

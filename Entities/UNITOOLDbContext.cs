@@ -13,25 +13,21 @@ namespace Graduation_Project.Entities
             optionsBuilder.UseSqlServer("Server=DESKTOP-A0LMSG6\\SD;Database=UNITOOL;Trusted_Connection=True;TrustServerCertificate=True;");
         }
         public DbSet<User> User { get; set; }
-        public DbSet<UserInformation> UsersInformations { get; set; }
         public DbSet<Tool> Tools { get; set; }
         public DbSet<ToolPhoto> Photos { get; set; }
         public DbSet<FavoriteTool> FavoriteTool { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configure UserInformation entity
-            modelBuilder.Entity<UserInformation>()
-                .HasKey(ui => ui.UserInformationId);
 
             // Configure Tool entity
             modelBuilder.Entity<Tool>()
                 .HasKey(t => t.ToolId);
 
             modelBuilder.Entity<Tool>()
-                .HasOne(t => t.UserInformation)
+                .HasOne(t => t.User)
                 .WithMany(u => u.Tool)
-                .HasForeignKey(t => t.UserInformationId);
+                .HasForeignKey(t => t.UserId);
 
             // Configure ToolPhoto entity
             modelBuilder.Entity<ToolPhoto>()
@@ -45,13 +41,13 @@ namespace Graduation_Project.Entities
 
             // Configure FavoriteTool entity
             modelBuilder.Entity<FavoriteTool>()
-                .HasKey(ft => new { ft.UserInformationId, ft.ToolId });
+                .HasKey(ft => new { ft.UserId, ft.ToolId });
 
             modelBuilder.Entity<FavoriteTool>()
-                .HasOne(ft => ft.UserInformation)
+                .HasOne(ft => ft.User)
                 .WithMany(ui => ui.FavoriteTool)
-                .HasForeignKey(ft => ft.UserInformationId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .HasForeignKey(ft => ft.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<FavoriteTool>()
                 .HasOne(ft => ft.Tool)

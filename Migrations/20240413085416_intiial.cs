@@ -1,11 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Graduation_Project.Migrations
 {
     /// <inheritdoc />
-    public partial class v1 : Migration
+#pragma warning disable CS8981 // The type name 'intiial' only contains lower-cased ascii characters. Such names may become reserved for the language.
+    public partial class intiial : Migration
+#pragma warning restore CS8981 // The type name 'intiial' only contains lower-cased ascii characters. Such names may become reserved for the language.
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,7 +34,20 @@ namespace Graduation_Project.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Univserity = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Government = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AcadmicYear = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    College = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FrontIdImage = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    BackIdImage = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    CollegeCardFrontImage = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    CollegeCardBackImage = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    PersonalImage = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    NationalId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -50,30 +66,6 @@ namespace Graduation_Project.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UsersInformations",
-                columns: table => new
-                {
-                    UserInformationId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Government = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AcadmicYear = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    College = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FrontIdImage = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    BackIdImage = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    CollegeCardFrontImage = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    CollegeCardBackImage = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    PersonalImage = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    NationalId = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UsersInformations", x => x.UserInformationId);
                 });
 
             migrationBuilder.CreateTable(
@@ -196,16 +188,16 @@ namespace Graduation_Project.Migrations
                     College = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Acadmicyear = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     University = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserInformationId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tools", x => x.ToolId);
                     table.ForeignKey(
-                        name: "FK_Tools_UsersInformations_UserInformationId",
-                        column: x => x.UserInformationId,
-                        principalTable: "UsersInformations",
-                        principalColumn: "UserInformationId",
+                        name: "FK_Tools_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -213,24 +205,24 @@ namespace Graduation_Project.Migrations
                 name: "FavoriteTool",
                 columns: table => new
                 {
-                    UserInformationId = table.Column<int>(type: "int", nullable: false),
-                    ToolId = table.Column<int>(type: "int", nullable: false),
-                    FavoriteToolId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    ToolId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FavoriteTool", x => new { x.UserInformationId, x.ToolId });
+                    table.PrimaryKey("PK_FavoriteTool", x => new { x.UserId, x.ToolId });
+                    table.ForeignKey(
+                        name: "FK_FavoriteTool_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_FavoriteTool_Tools_ToolId",
                         column: x => x.ToolId,
                         principalTable: "Tools",
                         principalColumn: "ToolId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_FavoriteTool_UsersInformations_UserInformationId",
-                        column: x => x.UserInformationId,
-                        principalTable: "UsersInformations",
-                        principalColumn: "UserInformationId");
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -303,9 +295,9 @@ namespace Graduation_Project.Migrations
                 column: "ToolId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tools_UserInformationId",
+                name: "IX_Tools_UserId",
                 table: "Tools",
-                column: "UserInformationId");
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -336,13 +328,10 @@ namespace Graduation_Project.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "Tools");
 
             migrationBuilder.DropTable(
-                name: "UsersInformations");
+                name: "AspNetUsers");
         }
     }
 }
