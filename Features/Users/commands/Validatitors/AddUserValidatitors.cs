@@ -1,4 +1,8 @@
 ﻿using FluentValidation;
+using Graduation_Project.Features.Users.commands.Models;
+using Graduation_Project.Resource;
+using Microsoft.Extensions.Localization;
+using SharpDX.DXGI;
 
 namespace Graduation_Project.Features.Users.commands.Validatitors
 {

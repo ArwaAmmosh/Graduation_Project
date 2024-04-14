@@ -1,4 +1,6 @@
-﻿namespace Graduation_Project.Bases
+﻿using System.Net;
+
+namespace Graduation_Project.Bases
 {
     public class Response<T>
     {

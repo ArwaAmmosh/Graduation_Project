@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Graduation_Project.Entities.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Graduation_Project.Entities
 {
