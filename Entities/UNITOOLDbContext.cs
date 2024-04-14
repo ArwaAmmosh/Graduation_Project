@@ -1,6 +1,4 @@
-﻿using Graduation_Project.Entities.Identity;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.Reflection;
 
 namespace Graduation_Project.Entities

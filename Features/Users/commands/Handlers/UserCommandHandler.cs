@@ -1,17 +1,10 @@
-﻿using AutoMapper;
-using Graduation_Project.Bases;
-using Graduation_Project.Entities.Identity;
-using Graduation_Project.Features.Users.commands.Models;
-using Graduation_Project.Resource;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Localization;
-using SharpDX.DXGI;
-
+﻿
 namespace Graduation_Project.Features.Users.commands.Handlers
 
 {
-    public class UserCommandHandler : ResponseHandler, IRequestHandler<AddUserCommand, Bases.Response<string>>
+    public class UserCommandHandler : ResponseHandler,
+                                      IRequestHandler<AddUserCommand, Response<string>>,
+                                      IRequestHandler<UpdateUserCommand, Response<string>>
     {
         #region Fields
         private readonly IMapper _mapper;
@@ -47,6 +40,23 @@ namespace Graduation_Project.Features.Users.commands.Handlers
             }
             return Created("");
             #endregion
+        }
+        public async Task<Bases.Response<string>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
+        {
+            var oldUser = _userManager.FindByIdAsync(request.Id.ToString());
+            if (oldUser == null)
+            {
+                return NotFound<string>();
+            }
+            var newUser = await _mapper.Map(request, oldUser);
+            newUser.UserName = newUser.FirstName + newUser.LastName;
+            var result = await _userManager.UpdateAsync(newUser);
+            if (!result.Succeeded)
+            {
+                return BadRequest<string>(result.Errors.FirstOrDefault().Description);
+            }
+            return Success("");
+
         }
     }
 }

@@ -11,6 +11,11 @@
         public const string UserNameIsExist = "User Name Is Exist";
         public const string EmailIsExist = "Email Is Exist";
         public const string FailedToAddUser = "Failed To Add User";
+        public const string FailedToUpdateUser = "Failed To Update User";
+        public const string UserNameNotExist = "UserName Not Exist";
+        public const string PasswordNotCorrect = "Password Not Correct";
+
+
 
     }
 }

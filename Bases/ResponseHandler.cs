@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
-using SharpDX.DXGI;
-
-namespace Graduation_Project.Bases
+﻿namespace Graduation_Project.Bases
 {
     public class ResponseHandler
     {
@@ -27,7 +24,7 @@ namespace Graduation_Project.Bases
             };
         }
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-        public Response<T> Success<T>(T entity, object Meta = null)
+        public Response<T> Success<T>(T entity, object Meta = null,string Message=null)
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         {
             return new Response<T>
@@ -35,7 +32,7 @@ namespace Graduation_Project.Bases
                 Data = entity,
                 StatusCode = System.Net.HttpStatusCode.OK,
                 Succeeded = true,
-                Message = "Added Successfully",
+                Message = Message == null ? "Added Successfully" : Message,
                 Meta = Meta
             };
         }
