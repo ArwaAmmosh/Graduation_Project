@@ -1,12 +1,10 @@
 ﻿namespace Graduation_Project.Mapping.Users
 {
     public partial class MappingProfile
-
     {
-        public void AddUserMapping()
+        public void GetUserByIdMapping()
         {
-            CreateMap<AddUserCommand, User>();
-
+            CreateMap<User, GetUserByIdResponse>();
         }
     }
 }

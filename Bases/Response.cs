@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace Graduation_Project.Bases
+﻿namespace Graduation_Project.Bases
 {
     public class Response<T>
     {
