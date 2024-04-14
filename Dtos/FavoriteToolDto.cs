@@ -1,8 +1,8 @@
 ﻿namespace Graduation_Project.Dtos
 {
-    public class ToolDto
+    public class FavoriteToolDto
     {
-       
+        public int ToolId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string RentTime { get; set; }
