@@ -19,7 +19,7 @@ namespace Graduation_Project.Controllers
             _context = context;
         }
 
-        // POST: api/FavoriteTools/{toolId}
+        /* POST: api/FavoriteTools/{toolId}
         [Authorize]
         [HttpPost("{toolId}")]
         public async Task<IActionResult> AddToFavorites(int toolId)
@@ -113,6 +113,6 @@ namespace Graduation_Project.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent(); 
-        }
+        }*/
     }
 }
