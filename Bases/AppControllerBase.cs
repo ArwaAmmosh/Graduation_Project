@@ -8,15 +8,10 @@ namespace Graduation_Project.Bases
     [ApiController]
     public class AppControllerBase : ControllerBase
     {
-#pragma warning disable CS8618 // Non-nullable field '_mediatorInstance' must contain a non-null value when exiting constructor. Consider declaring the field as nullable.
         private IMediator? _mediatorInstance;
-#pragma warning restore CS8618 // Non-nullable field '_mediatorInstance' must contain a non-null value when exiting constructor. Consider declaring the field as nullable.
-#pragma warning disable CS8601 // Possible null reference assignment.
-#pragma warning disable CS8603 // Possible null reference return.
+
         protected IMediator Mediator => _mediatorInstance ??= HttpContext.RequestServices.GetService<IMediator>() ;
 
-#pragma warning restore CS8603 // Possible null reference return.
-#pragma warning restore CS8601 // Possible null reference assignment.
         #region Actions
         public ObjectResult NewResult<T>(Response<T> response)
         {

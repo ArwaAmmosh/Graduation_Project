@@ -6,9 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Graduation_Project.Migrations
 {
     /// <inheritdoc />
-#pragma warning disable CS8981 // The type name 'intiial' only contains lower-cased ascii characters. Such names may become reserved for the language.
-    public partial class intiial : Migration
-#pragma warning restore CS8981 // The type name 'intiial' only contains lower-cased ascii characters. Such names may become reserved for the language.
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,20 +32,18 @@ namespace Graduation_Project.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Univserity = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Government = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AcadmicYear = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    College = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FrontIdImage = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    BackIdImage = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    CollegeCardFrontImage = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    CollegeCardBackImage = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    PersonalImage = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    NationalId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Government = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AcadmicYear = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    College = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FrontIdImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BackIdImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CollegeCardFrontImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CollegeCardBackImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PersonalImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NationalId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -175,6 +171,32 @@ namespace Graduation_Project.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RefreshTokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    JwtId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsUsed = table.Column<bool>(type: "bit", nullable: false),
+                    IsRevoked = table.Column<bool>(type: "bit", nullable: false),
+                    AddedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefreshTokens_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tools",
                 columns: table => new
                 {
@@ -221,8 +243,7 @@ namespace Graduation_Project.Migrations
                         name: "FK_FavoriteTool_Tools_ToolId",
                         column: x => x.ToolId,
                         principalTable: "Tools",
-                        principalColumn: "ToolId",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "ToolId");
                 });
 
             migrationBuilder.CreateTable(
@@ -295,6 +316,11 @@ namespace Graduation_Project.Migrations
                 column: "ToolId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_UserId",
+                table: "RefreshTokens",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tools_UserId",
                 table: "Tools",
                 column: "UserId");
@@ -323,6 +349,9 @@ namespace Graduation_Project.Migrations
 
             migrationBuilder.DropTable(
                 name: "Photos");
+
+            migrationBuilder.DropTable(
+                name: "RefreshTokens");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

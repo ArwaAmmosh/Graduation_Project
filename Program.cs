@@ -9,19 +9,29 @@ global using MediatR;
 global using AutoMapper;
 global using System.Net;
 global using Microsoft.AspNetCore.Identity;
-global using Microsoft.AspNetCore.Authentication.JwtBearer; // Add this using directive
-global using Microsoft.IdentityModel.Tokens; // Add this using directive
-global using System.Text; // Add this using directive
+global using Microsoft.AspNetCore.Authentication.JwtBearer; 
+global using Microsoft.IdentityModel.Tokens;
+global using System.Text;
+global using Graduation_Project.Bases;
+global using Graduation_Project.Features.Users.commands.Models;
+global using Graduation_Project.Features.Users.Queries.Models;
+global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.AspNetCore.Mvc;
+global using System.Drawing.Text;
+global using Graduation_Project.Services.Abstracts;
+global using Graduation_Project.Services.Implemention;
+global using Graduation_Project.Service;
+global using Microsoft.AspNetCore.Mvc.Infrastructure;
+global using Microsoft.AspNetCore.Mvc.Routing;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddServiceRegisteration();
+builder.Services.AddServiceRegisteration(builder.Configuration);
+builder.Services.AddAuthentication();
 builder.Services.AddDbContext<UNITOOLDbContext>();
-builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
 #region Localization
 builder.Services.AddControllersWithViews();
 builder.Services.AddLocalization(opt => opt.ResourcesPath = "");
@@ -40,25 +50,16 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 });
 #endregion
 
-builder.Services.AddAuthentication(options =>
+builder.Services.AddServiceDependencies();
+builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+builder.Services.AddTransient<IUrlHelper>(x =>
 {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-    };
+    var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
+    var factory = x.GetRequiredService<IUrlHelperFactory>();
+    return factory.GetUrlHelper(actionContext);
 });
-
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -66,7 +67,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseStaticFiles();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

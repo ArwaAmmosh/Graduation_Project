@@ -51,17 +51,17 @@ namespace Graduation_Project.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("BackIdImage")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<string>("BackIdImage")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("College")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte[]>("CollegeCardBackImage")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<string>("CollegeCardBackImage")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte[]>("CollegeCardFrontImage")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<string>("CollegeCardFrontImage")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -78,8 +78,8 @@ namespace Graduation_Project.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte[]>("FrontIdImage")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<string>("FrontIdImage")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Government")
                         .HasColumnType("nvarchar(max)");
@@ -108,8 +108,8 @@ namespace Graduation_Project.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte[]>("PersonalImage")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<string>("PersonalImage")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
@@ -142,6 +142,45 @@ namespace Graduation_Project.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Graduation_Project.Entities.Identity.UserRefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AddedTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("JwtId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("Graduation_Project.Entities.Tool", b =>
@@ -353,7 +392,7 @@ namespace Graduation_Project.Migrations
                     b.HasOne("Graduation_Project.Entities.Tool", "Tool")
                         .WithMany("FavoriteTool")
                         .HasForeignKey("ToolId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Graduation_Project.Entities.Identity.User", "User")
@@ -365,6 +404,17 @@ namespace Graduation_Project.Migrations
                     b.Navigation("Tool");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Graduation_Project.Entities.Identity.UserRefreshToken", b =>
+                {
+                    b.HasOne("Graduation_Project.Entities.Identity.User", "user")
+                        .WithMany("UserRefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("Graduation_Project.Entities.Tool", b =>
@@ -445,6 +495,8 @@ namespace Graduation_Project.Migrations
                     b.Navigation("FavoriteTool");
 
                     b.Navigation("Tool");
+
+                    b.Navigation("UserRefreshTokens");
                 });
 
             modelBuilder.Entity("Graduation_Project.Entities.Tool", b =>

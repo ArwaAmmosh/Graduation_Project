@@ -7,6 +7,9 @@ namespace Graduation_Project.Mapping.Users
         public MappingProfile()
         {
             AddUserMapping();
+            UpdateUserMapping();
+            GetUserByIdMapping();
+            GetUserPaginationMapping();
         }
     }
 }
