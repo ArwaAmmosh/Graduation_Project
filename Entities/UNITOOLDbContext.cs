@@ -10,9 +10,10 @@ namespace Graduation_Project.Entities
         public UNITOOLDbContext(DbContextOptions<UNITOOLDbContext> options) : base(options) { }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=.;Database=UNITOOL;Trusted_Connection=True;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=DESKTOP-A0LMSG6\\SD;Database=UNITOOL;Trusted_Connection=True;TrustServerCertificate=True;");
         }
-        public DbSet<User> User { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<UserRefreshToken> RefreshTokens { get; set; }
         public DbSet<Tool> Tools { get; set; }
         public DbSet<ToolPhoto> Photos { get; set; }
         public DbSet<FavoriteTool> FavoriteTool { get; set; }
@@ -53,7 +54,7 @@ namespace Graduation_Project.Entities
                 .HasOne(ft => ft.Tool)
                 .WithMany(t => t.FavoriteTool)
                 .HasForeignKey(ft => ft.ToolId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
 
 
