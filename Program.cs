@@ -23,6 +23,11 @@ global using Graduation_Project.Services.Implemention;
 global using Graduation_Project.Service;
 global using Microsoft.AspNetCore.Mvc.Infrastructure;
 global using Microsoft.AspNetCore.Mvc.Routing;
+global using Graduation_Project.Entities.Identity;
+global using Graduation_Project.Infrastructure.Abstract;
+global using Graduation_Project.Infrastructure.Repository;
+global using Microsoft.Extensions.DependencyInjection;
+
 
 var builder = WebApplication.CreateBuilder(args);
 

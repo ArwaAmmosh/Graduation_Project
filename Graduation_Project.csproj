@@ -48,9 +48,7 @@
 
   <ItemGroup>
     <Folder Include="Features\Authentication\Command\Results\" />
-    <Folder Include="Features\Authentication\Queries\" />
     <Folder Include="Features\Users\Queries\Models\" />
-    <Folder Include="Infrastructure\Abstract\" />
     <Folder Include="Mapping\Users\Queries\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>

@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
+﻿
 namespace Graduation_Project.Service
 {
     public static class ModuleServiceDependencies
@@ -9,6 +8,7 @@ namespace Graduation_Project.Service
 
             services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddTransient<IUserService, UserServices>();
+            services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddTransient<IFileService, FileService>();
             return services;
         }

@@ -1,10 +1,12 @@
-﻿using Graduation_Project.Entities.Identity;
-using Graduation_Project.Results;
+﻿using Azure.Core;
+using Graduation_Project.Entities.Identity;
 using Graduation_Project.Services.Abstracts;
+using Newtonsoft.Json.Linq;
+using System.Collections.Concurrent;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
-
+using Microsoft.AspNetCore.Identity;
 namespace Graduation_Project.Services.Implemention
 {
     public class AuthenticationService : IAuthenticationService
@@ -12,14 +14,18 @@ namespace Graduation_Project.Services.Implemention
         #region Fields
         private readonly JwtSettings _jwtSettings;
         private readonly UserManager<User> _userManager;
+        private readonly IRefreshTokenRepository _refreshTokenRepository;
+
         #endregion 
 
         #region Constructors
         public AuthenticationService(JwtSettings jwtSettings,
-                                     UserManager<User> userManager)
+                                     UserManager<User> userManager,
+                                     IRefreshTokenRepository refreshTokenRepository)
         {
             _jwtSettings = jwtSettings;
             _userManager = userManager;
+            _refreshTokenRepository = refreshTokenRepository;
         }
 
 
@@ -27,16 +33,63 @@ namespace Graduation_Project.Services.Implemention
 
         #region Handle Functions
 
-        public async Task<string> GetJWTToken(User user)
+        public async Task<JwtAuthResult> GetJWTToken(User user)
+        {
+            var (jwtToken,accessToken) =await GenerateJWTToken(user);
+            var refreshToken = GetRefreshToken(user.UserName);
+            var userRefreshToken = new UserRefreshToken
+            {
+                AddedTime = DateTime.Now,
+                ExpiryDate = DateTime.Now.AddDays(_jwtSettings.RefreshTokenExpireDate),
+                IsUsed=true,
+                IsRevoked=false,
+                JwtId=jwtToken.Id,
+                RefreshToken=refreshToken.TokenString,
+                Token=accessToken,
+                UserId=user.Id
+
+            };
+           await _refreshTokenRepository.AddAsync(userRefreshToken);
+            return new JwtAuthResult
+            {
+                AccessToken = accessToken,
+                refreshToken = refreshToken
+            };
+        }
+
+        private string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            var randomNumberGenerate = RandomNumberGenerator.Create();
+            randomNumberGenerate.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
+        }
+        public List<Claim> GetClaims(User user)
         {
             var claims = new List<Claim>
-            {
-                new Claim (nameof(UserClaimModel.UserName),user.UserName),
-                new Claim (nameof(UserClaimModel.Email),user.Email),
-                new Claim (nameof(UserClaimModel.University),user.Univserity)
+            { 
+                new Claim(nameof(UserClaimModel.Id), user.Id.ToString()),
+                new Claim(nameof(UserClaimModel.UserName), user.UserName),
+                new Claim(nameof(UserClaimModel.Email), user.Email),
+                new Claim(nameof(UserClaimModel.Univserity), user.Univserity)
 
 
             };
+            return claims;
+        } 
+        private RefreshToken GetRefreshToken(string userName)
+        {
+            var refreshToken = new RefreshToken
+            {
+                UserName = userName,
+                TokenString = GenerateRefreshToken(),
+                ExpireAt = DateTime.Now.AddDays(_jwtSettings.AccessTokenExpireDate)
+            };
+            return refreshToken;
+        }
+        private async Task<(JwtSecurityToken, string)> GenerateJWTToken(User user)
+        {
+            var claims = GetClaims(user);
             var jwtToken = new JwtSecurityToken(
                 _jwtSettings.Issuer,
                 _jwtSettings.Audience,
@@ -44,10 +97,97 @@ namespace Graduation_Project.Services.Implemention
                 expires: DateTime.Now.AddDays(_jwtSettings.AccessTokenExpireDate),
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtSettings.Secret)), SecurityAlgorithms.HmacSha256Signature));
             var accessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
-            return await Task.FromResult(accessToken);
+            return (jwtToken,accessToken);
+
+        }
+        
+        public JwtSecurityToken ReadJWTToken(string accessToken)
+        {
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+            var handler = new JwtSecurityTokenHandler();
+           return handler.ReadJwtToken(accessToken);
+            
+        }
+        public async Task<string> ValidateToken(string accessToken)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var parameters = new TokenValidationParameters
+            {
+                ValidateIssuer = _jwtSettings.ValidateIssuer,
+                ValidIssuers = new[] { _jwtSettings.Issuer },
+                ValidateIssuerSigningKey = _jwtSettings.ValidateIssuerSigningKey,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtSettings.Secret)),
+                ValidAudience = _jwtSettings.Audience,
+                ValidateAudience = _jwtSettings.ValidateAudience,
+                ValidateLifetime = _jwtSettings.ValidateLifeTime,
+            };
+            try
+            {
+                var validator = handler.ValidateToken(accessToken, parameters, out SecurityToken validatedToken);
+
+                if (validator == null)
+                {
+                    return "InvalidToken";
+                }
+
+                return "NotExpired";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+        public async Task<(string, DateTime?)> ValidateDetails(JwtSecurityToken jwtToken, string accessToken, string refreshToken)
+        {
+            if (jwtToken == null || !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256Signature))
+            {
+                return ("AlgorithmIsWrong", null);
+            }
+            if (jwtToken.ValidTo>DateTime.UtcNow)
+            {
+                return ("TokenIsNotExpired", null);
+            } 
+
+            //Get User
+
+            var userId = jwtToken.Claims.FirstOrDefault(x => x.Type == nameof(UserClaimModel.Id)).Value;
+            var userRefreshToken = await _refreshTokenRepository.GetTableNoTracking()
+                                                               .FirstOrDefaultAsync(x => x.Token == accessToken &&
+                                                                                         x.RefreshToken == refreshToken &&
+                                                                                         x.UserId == int.Parse(userId));
+            if (userRefreshToken == null)
+              {
+                    return ("RefreshTokenIsNotFound", null);
+                }
+
+            if (userRefreshToken.ExpiryDate < DateTime.UtcNow)
+                {
+                   userRefreshToken.IsRevoked = true;
+                   userRefreshToken.IsUsed = false;
+                   await _refreshTokenRepository.UpdateAsync(userRefreshToken);
+                   return ("RefreshTokenIsExpired", null);
+                }
+           var expirydate = userRefreshToken.ExpiryDate;
+          return (userId, expirydate);
+        }
+        public async Task<JwtAuthResult> GetRefreshToken(User user, JwtSecurityToken jwtToken, DateTime? expiryDate, string refreshToken)
+        {
+            var (jwtSecurityToken, newToken) = await GenerateJWTToken(user);
+            var response = new JwtAuthResult();
+            response.AccessToken = newToken;
+            var refreshTokenResult = new RefreshToken();
+            refreshTokenResult.UserName = jwtToken.Claims.FirstOrDefault(x => x.Type == nameof(UserClaimModel.UserName)).Value;
+            refreshTokenResult.TokenString = refreshToken;
+            refreshTokenResult.ExpireAt = (DateTime)expiryDate;
+            response.refreshToken = refreshTokenResult;
+            return response;
+
         }
 
-      
+
 
 
 
