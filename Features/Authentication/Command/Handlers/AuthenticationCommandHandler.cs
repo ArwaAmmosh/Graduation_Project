@@ -1,14 +1,17 @@
 ﻿using Graduation_Project.Entities.Identity;
 using Graduation_Project.Features.Authentication.Command.Models;
 using Graduation_Project.Resource;
-using Graduation_Project.Results;
 using Microsoft.Extensions.Localization;
 using SharpDX.DXGI;
 
 namespace Graduation_Project.Features.Authentication.Command.Handlers
 {
     public class AuthenticationCommandHandler : ResponseHandler,
-                                               IRequestHandler<SignInCommand, Response<string>>
+                                               IRequestHandler<SignInCommand, Response<JwtAuthResult>>,
+                                               IRequestHandler<RefreshTokenCommand, Response<JwtAuthResult>>
+
+
+
 
     {
         #region Fields
@@ -36,16 +39,16 @@ namespace Graduation_Project.Features.Authentication.Command.Handlers
         #endregion
 
         #region Handle Functions
-        public async Task<Response<string>> Handle(SignInCommand request, CancellationToken cancellationToken)
+        public async Task<Response<JwtAuthResult>> Handle(SignInCommand request, CancellationToken cancellationToken)
         {
             //Check if user is exist or not
             var user = await _userManager.FindByNameAsync(request.UserName);
             //Return The UserName Not Found
-            if (user == null) return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.UserNameIsNotExist]);
+            if (user == null) return BadRequest<JwtAuthResult>(_stringLocalizer[SharedResourcesKeys.UserNameIsNotExist]);
             //try To Sign in 
             var signInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
             //if Failed Return Passord is wrong
-            if (!signInResult.Succeeded) return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.PasswordNotCorrect]);
+            if (!signInResult.Succeeded) return BadRequest<JwtAuthResult>(_stringLocalizer[SharedResourcesKeys.PasswordNotCorrect]);
             //confirm email
            /*if (!user.EmailConfirmed)
                 return BadRequest<JwtAuthResult>(_stringLocalizer[SharedResourcesKeys.EmailNotConfirmed]);*/
@@ -55,7 +58,9 @@ namespace Graduation_Project.Features.Authentication.Command.Handlers
             return Success(result);
         }
 
-        /*public async Task<Response<JwtAuthResult>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+       
+
+        public async Task<Response<JwtAuthResult>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
         {
             var jwtToken = _authenticationService.ReadJWTToken(request.AccessToken);
             var userIdAndExpireDate = await _authenticationService.ValidateDetails(jwtToken, request.AccessToken, request.RefreshToken);
@@ -76,7 +81,7 @@ namespace Graduation_Project.Features.Authentication.Command.Handlers
             return Success(result);
         }
 
-       public async Task<Response<string>> Handle(SendResetPasswordCommand request, CancellationToken cancellationToken)
+     /*  public async Task<Response<string>> Handle(SendResetPasswordCommand request, CancellationToken cancellationToken)
         {
             var result = await _authenticationService.SendResetPasswordCode(request.Email);
             switch (result)
@@ -102,5 +107,5 @@ namespace Graduation_Project.Features.Authentication.Command.Handlers
         }
         */
         #endregion
-   
+
     } }

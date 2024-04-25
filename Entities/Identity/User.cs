@@ -5,6 +5,11 @@ namespace Graduation_Project.Entities.Identity
 {
     public class User : IdentityUser<int>
     { 
+        public User()
+        {
+            UserRefreshTokens = new HashSet<UserRefreshToken>();
+        }
+
         public string Univserity { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
