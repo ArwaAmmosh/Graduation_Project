@@ -3,6 +3,7 @@ using Graduation_Project.Mapping.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using System.Security.Claims;
 
 namespace Graduation_Project.Services
 {
@@ -53,6 +54,7 @@ namespace Graduation_Project.Services
                     ValidAudience = jwtSettings.Audience,
                     ValidateAudience = jwtSettings.ValidateAudience,
                     ValidateLifetime = jwtSettings.ValidateLifeTime,
+                    NameClaimType = ClaimTypes.NameIdentifier
                 };
             });
 
