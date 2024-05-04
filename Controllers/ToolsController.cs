@@ -198,32 +198,38 @@ namespace Graduation_Project.Controllers
         }
 
         // POST: api/Tools
-        
+
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<Tool>> PostTool(Tool tool)
+        public async Task<ActionResult<Tool>> PostTool(ToolPostDto toolPostDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdString, out int userId))
             {
-                
                 return BadRequest("Invalid user ID format.");
             }
 
-            tool.UserId = userId; 
+            // Map properties from DTO to Tool entity
+            var tool = new Tool
+            {
+                Name = toolPostDto.Name,
+                Description = toolPostDto.Description,
+                RentTime = toolPostDto.RentTime,
+                College = toolPostDto.College,
+                University = toolPostDto.University,
+                Price = toolPostDto.Price,
+                UserId = userId
+            };
 
             _context.Tools.Add(tool);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetTool", new { id = tool.ToolId }, tool);
         }
-        
     }
 }
-
