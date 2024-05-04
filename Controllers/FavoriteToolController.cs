@@ -79,9 +79,18 @@ namespace Graduation_Project.Controllers
             // Return the favorite tool DTO
             var favoriteToolDto = new FavoriteToolDto
             {
-                ToolId = favoriteTool.ToolId,
-                Name = favoriteTool.Tool.Name, // Assuming Tool has a Name property
-                                                   // Include other properties of the Tool entity as needed
+                
+                Name = favoriteTool.Tool.Name,
+                Description = favoriteTool.Tool.Description,
+                 
+                RentTime = favoriteTool.Tool.RentTime,
+
+                College = favoriteTool.Tool.College,
+
+                University = favoriteTool.Tool.University,
+
+                Price = favoriteTool.Tool.Price
+
             };
 
             return Ok(favoriteToolDto);

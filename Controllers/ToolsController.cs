@@ -207,7 +207,7 @@ namespace Graduation_Project.Controllers
         // POST: api/Tools
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<Tool>> PostTool(ToolPostDto toolPostDto)
+        public async Task<ActionResult<Tool>> PostTool([FromForm] ToolPostDto toolPostDto)
         {
             var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
