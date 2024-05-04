@@ -49,6 +49,7 @@
   <ItemGroup>
     <Folder Include="Features\Users\Queries\Models\" />
     <Folder Include="Mapping\Users\Queries\" />
+    <Folder Include="Properties\NewFolder\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

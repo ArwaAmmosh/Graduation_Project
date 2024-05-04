@@ -49,6 +49,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddServiceRegisteration(builder.Configuration);
 builder.Services.AddAuthentication();
 builder.Services.AddDbContext<UNITOOLDbContext>();
+builder.Services.AddScoped<CurrentUserService>(); // Added line
 #region Localization
 builder.Services.AddControllersWithViews();
 builder.Services.AddLocalization(opt => opt.ResourcesPath = "");
@@ -68,7 +69,6 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 #endregion
 
 builder.Services.AddServiceDependencies();
-
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
@@ -86,7 +86,7 @@ using (var scope = app.Services.CreateScope())
     await RoleSeeder.SeedAsync(roleManager);
     await UserSeeder.SeedAsync(userManager);
 }
-var options=app.Services.GetService<IOptions<RequestLocalizationOptions>>();
+var options = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
 app.UseRequestLocalization(options.Value);
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -99,4 +99,5 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.UseMiddleware<ExceptionMiddleware>();
 app.Run();

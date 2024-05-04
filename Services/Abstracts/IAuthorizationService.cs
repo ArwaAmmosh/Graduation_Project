@@ -1,4 +1,7 @@
-﻿namespace Graduation_Project.Services.Abstracts
+﻿using Graduation_Project.Features.Authorization.Queries.Results;
+using Graduation_Project.Helpers.DTOs;
+
+namespace Graduation_Project.Services.Abstracts
 {
     public interface IAuthorizationService
     {
