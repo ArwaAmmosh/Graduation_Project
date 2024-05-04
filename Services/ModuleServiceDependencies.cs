@@ -1,5 +1,4 @@
-﻿
-namespace Graduation_Project.Service
+﻿namespace Graduation_Project.Service
 {
     public static class ModuleServiceDependencies
     {
@@ -10,6 +9,8 @@ namespace Graduation_Project.Service
             services.AddTransient<IUserService, UserServices>();
             services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddTransient<IFileService, FileService>();
+            services.AddTransient<IAuthorizationService, AuthorizationService>();
+
             return services;
         }
     }

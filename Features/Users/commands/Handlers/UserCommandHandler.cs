@@ -53,8 +53,10 @@ namespace Graduation_Project.Features.Users.commands.Handlers
             {
                 return BadRequest<string>(creatResult.Errors.FirstOrDefault().Description);
             }
+            
+                await _userManager.AddToRoleAsync(identityUser, "User");
+            
             return Created("");
-            #endregion
         }
 
         public async Task<Response<string>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
@@ -118,6 +120,7 @@ namespace Graduation_Project.Features.Users.commands.Handlers
             return Success<string>(_sharedResource[SharedResourcesKeys.Success]);
         }
 
-    
-}
+        #endregion
+
+    }
 }

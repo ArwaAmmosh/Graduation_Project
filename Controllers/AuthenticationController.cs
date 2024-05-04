@@ -1,7 +1,9 @@
 ﻿using Graduation_Project.Features.Authentication.Command.Models;
+using Graduation_Project.Features.Authentication.Queries.Models;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Graduation_Project.Controllers
 {
@@ -22,5 +24,13 @@ namespace Graduation_Project.Controllers
             var response = await Mediator.Send(command);
             return NewResult(response);
         }
+        [HttpGet("ValidateToken")]
+        public async Task<IActionResult> ValidateToken([FromQuery] AuthorizeUserQuery query)
+        {
+            var response = await Mediator.Send(query);
+            return NewResult(response);
+        }
+
+       
     }
 }

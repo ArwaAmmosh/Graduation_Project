@@ -27,6 +27,18 @@ global using Graduation_Project.Entities.Identity;
 global using Graduation_Project.Infrastructure.Abstract;
 global using Graduation_Project.Infrastructure.Repository;
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Options;
+global using FluentValidation;
+global using Graduation_Project.Features.Authorization.Commands.Models;
+global using Microsoft.Extensions.Localization;
+global using SharpDX.DXGI;
+global using IAuthorizationService = Graduation_Project.Services.Abstracts.IAuthorizationService;
+global using Graduation_Project.Resource;
+global using Graduation_Project.Seeder;
+global using Graduation_Project.Helpers.DTOs;
+global using Graduation_Project.Features.Authorization.Queries.Models;
+global using Graduation_Project.Features.Authorization.Queries.Results;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -56,6 +68,9 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 #endregion
 
 builder.Services.AddServiceDependencies();
+
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddTransient<IUrlHelper>(x =>
 {
@@ -64,8 +79,15 @@ builder.Services.AddTransient<IUrlHelper>(x =>
     return factory.GetUrlHelper(actionContext);
 });
 var app = builder.Build();
-
-
+using (var scope = app.Services.CreateScope())
+{
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
+    await RoleSeeder.SeedAsync(roleManager);
+    await UserSeeder.SeedAsync(userManager);
+}
+var options=app.Services.GetService<IOptions<RequestLocalizationOptions>>();
+app.UseRequestLocalization(options.Value);
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

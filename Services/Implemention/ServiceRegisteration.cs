@@ -10,7 +10,7 @@ namespace Graduation_Project.Services
     {
         public static IServiceCollection AddServiceRegisteration(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddIdentity<User, IdentityRole<int>>(option =>
+            services.AddIdentity<User, Role>(option =>
             {
                 //signin
                 option.SignIn.RequireConfirmedEmail = false;
@@ -90,7 +90,15 @@ namespace Graduation_Project.Services
             });
              });
 
-
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Registeriation", policy =>
+                {
+                    policy.RequireClaim("Registeriation", "true");
+                }
+                );
+            }
+            );
 
             return services;
 

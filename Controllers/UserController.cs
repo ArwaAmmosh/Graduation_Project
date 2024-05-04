@@ -1,4 +1,5 @@
 ﻿
+
 namespace Graduation.Controllers
 {
     [Route("api/[controller]")]
@@ -6,6 +7,7 @@ namespace Graduation.Controllers
     [Authorize]
     public class UserController : AppControllerBase
     {
+
         [AllowAnonymous]
         [HttpPost("AddnewUser")]
         public async Task<IActionResult> Create([FromForm] AddUserCommand command)

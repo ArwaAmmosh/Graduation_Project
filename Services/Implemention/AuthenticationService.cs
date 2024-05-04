@@ -64,17 +64,24 @@ namespace Graduation_Project.Services.Implemention
             randomNumberGenerate.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);
         }
-        public List<Claim> GetClaims(User user)
+        public List<Claim> GetClaims(User user,List<string> roles)
         {
             var claims = new List<Claim>
-            { 
+            {
                 new Claim(nameof(UserClaimModel.Id), user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(nameof(UserClaimModel.UserName), user.UserName),
                 new Claim(nameof(UserClaimModel.Email), user.Email),
                 new Claim(nameof(UserClaimModel.Univserity), user.Univserity)
 
 
+
             };
+            foreach(var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
             return claims;
         } 
         private RefreshToken GetRefreshToken(string userName)
@@ -89,7 +96,8 @@ namespace Graduation_Project.Services.Implemention
         }
         private async Task<(JwtSecurityToken, string)> GenerateJWTToken(User user)
         {
-            var claims = GetClaims(user);
+            var roles= await _userManager.GetRolesAsync(user);
+            var claims = GetClaims(user,roles.ToList());
             var jwtToken = new JwtSecurityToken(
                 _jwtSettings.Issuer,
                 _jwtSettings.Audience,
@@ -123,6 +131,7 @@ namespace Graduation_Project.Services.Implemention
                 ValidAudience = _jwtSettings.Audience,
                 ValidateAudience = _jwtSettings.ValidateAudience,
                 ValidateLifetime = _jwtSettings.ValidateLifeTime,
+                NameClaimType=ClaimTypes.NameIdentifier
             };
             try
             {

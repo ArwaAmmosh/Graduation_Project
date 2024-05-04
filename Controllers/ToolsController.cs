@@ -184,7 +184,7 @@ namespace Graduation_Project.Controllers
             return NoContent(); 
         }
         //GET tool user ADD
-        /*
+        
         [Authorize]
         [HttpGet("mytools")]
         public async Task<ActionResult<IEnumerable<Tool>>> GetMyTools()
@@ -195,10 +195,10 @@ namespace Graduation_Project.Controllers
             var userTools = await _context.Tools.Where(t => t.UserId == userId).ToListAsync();
 
             return Ok(userTools);
-        }*/
+        }
 
         // POST: api/Tools
-        /*
+        
         [Authorize]
         [HttpPost]
         public async Task<ActionResult<Tool>> PostTool(Tool tool)
@@ -223,7 +223,7 @@ namespace Graduation_Project.Controllers
 
             return CreatedAtAction("GetTool", new { id = tool.ToolId }, tool);
         }
-        */
+        
     }
 }
 
