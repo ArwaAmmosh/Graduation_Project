@@ -1,8 +1,7 @@
-﻿namespace Graduation_Project.Dtos
+﻿namespace Graduation_Project.Features.Tool.Queries.Results
 {
-    public class FavoriteToolDto
+    public class GetToolPaginationReponse
     {
-        
         public string Name { get; set; }
         public string Description { get; set; }
         public string RentTime { get; set; }

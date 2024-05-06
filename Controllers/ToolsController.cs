@@ -1,10 +1,7 @@
 ﻿using Graduation_Project.Dtos;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using Graduation_Project.Wrapper;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Graduation_Project.Controllers
 {
@@ -22,11 +19,10 @@ namespace Graduation_Project.Controllers
         }
 
         //All Tool 
-        // GET: api/Tool
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ToolDto>>> GetTools()
+        public async Task<ActionResult<PaginatedResult<ToolDto>>> GetTools(int pageNumber = 1, int pageSize = 10)
         {
-            var tools = await _context.Tools
+            var toolsQuery = _context.Tools
                 .Select(t => new ToolDto
                 {
                     Name = t.Name,
@@ -36,16 +32,20 @@ namespace Graduation_Project.Controllers
                     College = t.College,
                     University = t.University
                 })
-                .ToListAsync();
+                .ToList(); // Materialize the query into a list
 
-            return tools;
+            var paginatedTools = PaginatedResult<ToolDto>.Success(toolsQuery, toolsQuery.Count(), pageNumber, pageSize);
+
+            return Ok(paginatedTools);
         }
+
+
 
         // GET: api/Tool/category/{category}
         [HttpGet("category/{category}")]
-        public async Task<ActionResult<IEnumerable<ToolDto>>> GetToolsByCategory(string category)
+        public async Task<ActionResult<PaginatedResult<ToolDto>>> GetToolsByCategory(string category, int pageNumber = 1, int pageSize = 10)
         {
-            var tools = await _context.Tools
+            var toolsQuery = _context.Tools
                 .Where(tool => tool.Category == category)
                 .Select(t => new ToolDto
                 {
@@ -56,14 +56,11 @@ namespace Graduation_Project.Controllers
                     College = t.College,
                     University = t.University
                 })
-                .ToListAsync();
+                .ToList(); // Materialize the query into a list
 
-            if (tools == null || !tools.Any())
-            {
-                return NotFound();
-            }
+            var paginatedTools = PaginatedResult<ToolDto>.Success(toolsQuery, toolsQuery.Count(), pageNumber, pageSize);
 
-            return tools;
+            return Ok(paginatedTools);
         }
 
         // GET: api/Tool/University/{University}
@@ -93,14 +90,14 @@ namespace Graduation_Project.Controllers
 
         // Search  // GET: api/Tool/search?name={Name}
         [HttpGet("searchByName")]
-        public async Task<ActionResult<IEnumerable<ToolDto>>> SearchToolsByName(string name)
+        public async Task<ActionResult<PaginatedResult<ToolDto>>> SearchToolsByName(string name, int pageNumber = 1, int pageSize = 10)
         {
             if (string.IsNullOrEmpty(name))
             {
                 return BadRequest("Tool name cannot be empty.");
             }
 
-            var tools = await _context.Tools
+            var toolsQuery = _context.Tools
                 .Where(tool => tool.Name.Contains(name))
                 .Select(t => new ToolDto
                 {
@@ -111,14 +108,11 @@ namespace Graduation_Project.Controllers
                     College = t.College,
                     University = t.University
                 })
-                .ToListAsync();
+                .ToList(); // Materialize the query into a list
 
-            if (tools == null || !tools.Any())
-            {
-                return NotFound();
-            }
+            var paginatedTools = PaginatedResult<ToolDto>.Success(toolsQuery, toolsQuery.Count(), pageNumber, pageSize);
 
-            return tools;
+            return Ok(paginatedTools);
         }
 
         //Update //// PUT: api/Tool/{id}
@@ -207,7 +201,7 @@ namespace Graduation_Project.Controllers
         // POST: api/Tools
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<Tool>> PostTool(ToolPostDto toolPostDto)
+        public async Task<ActionResult<Tool>> PostTool([FromForm] ToolPostDto toolPostDto)
         {
             var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
@@ -246,5 +240,9 @@ namespace Graduation_Project.Controllers
         {
             return _context.Tools.Any(e => e.ToolId == id);
         }
+
+
     }
+    
 }
+
