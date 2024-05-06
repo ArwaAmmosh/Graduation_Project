@@ -1,4 +1,5 @@
 ﻿using Graduation_Project.Dtos;
+using Graduation_Project.Features.Tool.Queries.Models;
 using Graduation_Project.Wrapper;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -7,15 +8,17 @@ namespace Graduation_Project.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ToolsController : ControllerBase
+    public class ToolsController : AppControllerBase
     {
         private readonly UNITOOLDbContext _context;
         private readonly CurrentUserService _currentUserService;
-
-        public ToolsController(UNITOOLDbContext context, CurrentUserService currentUserService)
+        private readonly IToolServices toolServices;
+        public ToolsController(UNITOOLDbContext context, CurrentUserService currentUserService, IToolServices _toolServices)
         {
             _context = context;
             _currentUserService = currentUserService; // Initialize _currentUserService
+            toolServices = _toolServices;
+
         }
 
         //All Tool 
@@ -37,6 +40,9 @@ namespace Graduation_Project.Controllers
             var paginatedTools = PaginatedResult<ToolDto>.Success(toolsQuery, toolsQuery.Count(), pageNumber, pageSize);
 
             return Ok(paginatedTools);
+
+            //var response = await Mediator.Send(query);
+            //return Ok(response);
         }
 
 
@@ -203,13 +209,13 @@ namespace Graduation_Project.Controllers
         [Authorize]
         public async Task<ActionResult<Tool>> PostTool([FromForm] ToolPostDto toolPostDto)
         {
-            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+           var image1 = await toolServices.Upload1Image(toolPostDto.ToolImages1);
+            var image2 = await toolServices.Upload2Image(toolPostDto.ToolImages2);
+            var image3 = await toolServices.Upload3Image(toolPostDto.ToolImages3);
+            var image4 = await toolServices.Upload4Image(toolPostDto.ToolImages4);
 
-            var handler = new JwtSecurityTokenHandler();
-            var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
-
-            var userIdClaim = jsonToken.Claims.FirstOrDefault(c => c.Type == "Id");
-            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+            var userId =_currentUserService.GetUserId();
+            if (userId != null)
             {
                 // Map properties from DTO to Tool entity
                 var tool = new Tool
@@ -222,7 +228,15 @@ namespace Graduation_Project.Controllers
                     Category = toolPostDto.Category,
                     Price = toolPostDto.Price,
                     Acadmicyear = toolPostDto.Acadmicyear,
-                    UserId = userId
+                    UserId = userId,
+                    Department= toolPostDto.Department,
+                    ToolImages1=image1,
+                    ToolImages2 = image2,
+                    ToolImages4=image4,
+                    ToolImages3 = image3
+
+
+
                 };
 
                 _context.Tools.Add(tool);

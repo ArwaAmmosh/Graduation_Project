@@ -26,7 +26,6 @@ namespace Graduation_Project.Entities
         public DbSet<User> Users { get; set; }
         public DbSet<UserRefreshToken> RefreshTokens { get; set; }
         public DbSet<Tool> Tools { get; set; }
-        public DbSet<ToolPhoto> Photos { get; set; }
         public DbSet<FavoriteTool> FavoriteTool { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -40,16 +39,6 @@ namespace Graduation_Project.Entities
                 .HasOne(t => t.User)
                 .WithMany(u => u.Tool)
                 .HasForeignKey(t => t.UserId);
-
-            // Configure ToolPhoto entity
-            modelBuilder.Entity<ToolPhoto>()
-                .HasKey(tp => tp.ToolPhotoId);
-
-            modelBuilder.Entity<Tool>()
-                .HasMany(t => t.ToolPhoto)
-                .WithOne(tp => tp.Tool)
-                .HasForeignKey(tp => tp.ToolId)
-                .OnDelete(DeleteBehavior.Cascade);
 
             // Configure FavoriteTool entity
             modelBuilder.Entity<FavoriteTool>()

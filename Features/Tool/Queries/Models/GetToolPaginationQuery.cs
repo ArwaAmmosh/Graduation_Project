@@ -1,4 +1,5 @@
 ﻿using Graduation_Project.Features.Tool.Queries.Results;
+using Graduation_Project.Features.Users.Queries.Results;
 using Graduation_Project.Wrapper;
 
 namespace Graduation_Project.Features.Tool.Queries.Models

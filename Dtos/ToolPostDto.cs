@@ -10,5 +10,10 @@
         public int Price { get; set; }
         public string Category { get; set; }
         public string Acadmicyear { get; set; }
+        public string Department { get; set; }
+        public IFormFile ToolImages1 { get; set; }
+        public IFormFile ToolImages2 { get; set; }
+        public IFormFile ToolImages3 { get; set; }
+        public IFormFile ToolImages4 { get; set; }
     }
 }

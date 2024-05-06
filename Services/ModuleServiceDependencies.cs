@@ -13,6 +13,8 @@ namespace Graduation_Project.Service
             services.AddTransient<IAuthorizationService, AuthorizationService>();
             services.AddTransient<IEmailsService, EmailsService>();
             services.AddTransient<ICurrentUserService, CurrentUserService>();
+            services.AddTransient<IToolServices, ToolServices>();
+
 
 
 

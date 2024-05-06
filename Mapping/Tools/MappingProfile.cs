@@ -4,16 +4,15 @@ using AutoMapper;
 
 namespace Graduation_Project.Mapping.Tools
 {
-    public partial class MappingProfile : Profile
+    public partial class MappingProfile: Profile
     {
-        public void GetToolByIdMapping()
+      
+        public MappingProfile() 
         {
-            CreateMap<Tool, GetToolByIdResponse>();
+            GetToolByIdMapping();
+            GetToolPaginationMapping();
+            AddToolMapping();
         }
-
-        public void GetToolPaginationMapping()
-        {
-            CreateMap<Tool, GetToolPaginationReponse>();
-        }
+      
     }
 }
