@@ -38,8 +38,20 @@ global using Graduation_Project.Seeder;
 global using Graduation_Project.Helpers.DTOs;
 global using Graduation_Project.Features.Authorization.Queries.Models;
 global using Graduation_Project.Features.Authorization.Queries.Results;
-
-
+global using MailKit.Net.Smtp;
+global using MimeKit;
+global using Graduation_Project.Features.Authentication.Command.Models;
+global using Graduation_Project.Features.Authentication.Queries.Models;
+global using System.IdentityModel.Tokens.Jwt;
+global using Graduation_Project.Services.AuthServices.Interface;
+global using Graduation_Project.Services.AuthServices.Implementation;
+global using Graduation_Project.Dtos;
+global using Microsoft.AspNetCore.Http;
+global using System.Security.Claims;
+global using System.Threading.Tasks;
+global using Graduation_Project.Filters;
+global using Serilog;
+using Graduation_Project.MiddleWare;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,7 +90,12 @@ builder.Services.AddTransient<IUrlHelper>(x =>
     var factory = x.GetRequiredService<IUrlHelperFactory>();
     return factory.GetUrlHelper(actionContext);
 });
+builder.Services.AddTransient<AuthFilter>();
+Log.Logger = new LoggerConfiguration()
+              .ReadFrom.Configuration(builder.Configuration).CreateLogger();
+builder.Services.AddSerilog();
 var app = builder.Build();
+app.UseMiddleware<ErrorHandlerMiddleware>();
 using (var scope = app.Services.CreateScope())
 {
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
@@ -98,6 +115,6 @@ app.UseStaticFiles();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
 app.UseMiddleware<ExceptionMiddleware>();
+app.MapControllers();
 app.Run();

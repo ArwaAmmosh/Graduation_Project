@@ -9,18 +9,20 @@
             {
                 var defaultUser = new User()
                 {
-                    UserName = "Admin",
-                    Email = "arwaahmedamosh@gmail.com",
-                    FirstName = "UNTOOL",
-                    LastName = "Project",
+                    UserName = "UNITOOL",
+                    Email = "UNITOOLTeam@gmail.com",
+                    FirstName = "UNITOOL",
+                    LastName = "Team",
                     Univserity = "Tanta",
                     Government = "El-Garbia",
-                    PhoneNumber = "010250123695",
+                    PhoneNumber = "01025019961",
                     EmailConfirmed = true,
-                    PhoneNumberConfirmed = true
+                    PhoneNumberConfirmed = true,
+                    SecurityStamp = Guid.NewGuid().ToString()
+
                 };
-                await _userManager.CreateAsync(defaultUser, "@ArwaAmmosh123");
-                await _userManager.AddToRoleAsync(defaultUser, "Admin");
+                await _userManager.CreateAsync(defaultUser, "@UNITOOL");
+                await _userManager.AddToRoleAsync(defaultUser, "SuperAdmin");
             }
         }
     }
