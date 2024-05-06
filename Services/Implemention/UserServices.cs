@@ -1,4 +1,5 @@
 ﻿using Graduation_Project.Entities.Identity;
+using Graduation_Project.Services.Abstracts;
 
 namespace Graduation_Project.Services.Implemention
 {
@@ -6,25 +7,41 @@ namespace Graduation_Project.Services.Implemention
     {
         #region Fields
         private readonly IFileService _fileService;
-        private readonly UNITOOLDbContext uNITOOLDbContext;
+        private readonly UNITOOLDbContext _uNITOOLDbContext;
+        private readonly UserManager<User> _userManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IEmailsService _emailsService;
+        private readonly IUrlHelper _urlHelper;
         #endregion
         #region Constructor
-        public UserServices(IFileService fileService)
-        {
-            _fileService = fileService;
 
+        public UserServices(UserManager<User> userManager,
+                              IHttpContextAccessor httpContextAccessor,
+                              IEmailsService emailsService,
+                              UNITOOLDbContext applicationDBContext,
+                              IUrlHelper urlHelper,
+                              IFileService fileService
+            )
+        {
+            _userManager = userManager;
+            _httpContextAccessor = httpContextAccessor;
+            _emailsService = emailsService;
+            _uNITOOLDbContext = applicationDBContext;
+            _urlHelper = urlHelper;
+            _fileService = fileService;
         }
+
         #endregion
         #region Functions
         public async Task SaveChangesAsync()
         {
-            await uNITOOLDbContext.SaveChangesAsync();
+            await _uNITOOLDbContext.SaveChangesAsync();
         }
 
         public virtual async Task UpdateAsync(User entity)
         {
-            uNITOOLDbContext.Set<User>().Update(entity);
-            await uNITOOLDbContext.SaveChangesAsync();
+            _uNITOOLDbContext.Set<User>().Update(entity);
+            await _uNITOOLDbContext.SaveChangesAsync();
 
         }
         public async Task<string> UploadFrontIdImage( IFormFile file)
@@ -103,7 +120,49 @@ namespace Graduation_Project.Services.Implemention
             }
             return imageUrl;
         }
-        #endregion
 
-    }
+        public async Task<string> CreateAsync(User user, string Password)
+        {
+            
+                var trans = await _uNITOOLDbContext.Database.BeginTransactionAsync();
+                try
+                {
+                    //if Email is Exist
+                    var existUser = await _userManager.FindByEmailAsync(user.Email);
+                    //email is Exist
+                    if (existUser != null) return "EmailIsExist";
+
+                //if username is Exist
+                user.UserName = user.FirstName + user.LastName;
+                var userByUserName = await _userManager.FindByNameAsync(user.UserName);
+                    //username is Exist
+                    if (userByUserName != null) return "UserNameIsExist";
+                    //Create
+                    var createResult = await _userManager.CreateAsync(user, Password);
+                    //Failed
+                    if (!createResult.Succeeded)
+                        return string.Join(",", createResult.Errors.Select(x => x.Description).ToList());
+             
+                    await _userManager.AddToRoleAsync(user, "ViewUser");
+                //Send Confirm Email
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var resquestAccessor = _httpContextAccessor.HttpContext.Request;
+                    var returnUrl = resquestAccessor.Scheme + "://" + resquestAccessor.Host + _urlHelper.Action("ConfirmEmail", "Authentication", new { userId = user.Id, code = code });
+                    var message = $"To Confirm Email Click Link: <a href='{returnUrl}'>Link Of Confirmation</a>";
+                    //$"/Api/V1/Authentication/ConfirmEmail?userId={user.Id}&code={code}";
+                    //message or body
+                    await _emailsService.SendEmail(user.Email, message, "ConFirm Email");
+
+                    await trans.CommitAsync();
+                    return "Success";
+                }
+                catch (Exception ex)
+                {
+                    await trans.RollbackAsync();
+                    return "Failed";
+                }
+            }
+            #endregion
+
+        }
 }

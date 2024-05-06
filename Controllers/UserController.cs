@@ -1,5 +1,4 @@
 ﻿
-
 namespace Graduation.Controllers
 {
     [Route("api/[controller]")]
@@ -8,8 +7,8 @@ namespace Graduation.Controllers
     public class UserController : AppControllerBase
     {
 
+        [HttpPost("Registration")]
         [AllowAnonymous]
-        [HttpPost("AddnewUser")]
         public async Task<IActionResult> Create([FromForm] AddUserCommand command)
         {
             var response = await Mediator.Send(command);
@@ -22,22 +21,24 @@ namespace Graduation.Controllers
             var response = await Mediator.Send(query);
             return Ok(response);
         }
-        [HttpGet("GetById")]
+        [HttpGet("GetUserById")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
         public async Task<IActionResult> GetUserById([FromQuery] int id)
         {
             var response = await Mediator.Send(new GetUserByIdQuery(id));
             return Ok(response);
         }
         [HttpPut("UpdateUserInformation")]
+        [Authorize(Roles = "ViewUser")]
         public async Task<IActionResult> Update([FromForm] UpdateUserCommand command)
         {
             var response = await Mediator.Send(command);
             return NewResult(response);
         }
         [HttpDelete("DeleteUser")]
-        public async Task<IActionResult> DeleteUser([FromRoute] int id)
+        public async Task<IActionResult> DeleteUser()
         {
-            return NewResult(await Mediator.Send(new DeleteUserCommand(id)));
+            return NewResult(await Mediator.Send(new DeleteUserCommand()));
         }
         [HttpPut("ChangeUserPassword")]
         public async Task<IActionResult> ChangeUserPassword([FromForm] ChangeUserPasswordCommand command)

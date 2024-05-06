@@ -12,5 +12,6 @@ namespace Graduation_Project.Services.Abstracts
         public  Task<string> UploadPersonalImage( IFormFile file);
         Task SaveChangesAsync();
         Task UpdateAsync(User entity);
+        public Task<string> CreateAsync(User entity,string Password);
     }
 }

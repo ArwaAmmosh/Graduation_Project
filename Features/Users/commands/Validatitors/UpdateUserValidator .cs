@@ -34,7 +34,7 @@ namespace Graduation_Project.Features.Users.commands.Validatitors
                 .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required])
                 .MaximumLength(100).WithMessage(_localizer[SharedResourcesKeys.MaxLengthis100]);
 
-            RuleFor(x => x.Email)
+            RuleFor(x => x.PhoneNumber)
                  .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
                  .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);
 
@@ -58,7 +58,8 @@ namespace Graduation_Project.Features.Users.commands.Validatitors
                  .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);
             RuleFor(x => x.NationalId)
                  .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
-                 .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);
+                 .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required])
+                 .Length(14).WithMessage(_localizer[SharedResourcesKeys.NumberOfRequiredDigits]);
             RuleFor(x => x.AcadmicYear)
                  .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
                  .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);

@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using EntityFrameworkCore.EncryptColumn.Attribute;
 using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Graduation_Project.Entities.Identity
 {
     public class User : IdentityUser<int>
@@ -10,12 +9,12 @@ namespace Graduation_Project.Entities.Identity
             UserRefreshTokens = new HashSet<UserRefreshToken>();
         }
 
-        public string Univserity { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-
+        public string Univserity { get; set; }
         public string? Government { get; set; }
-
+        [EncryptColumn]
+        public string? Code { get; set; }
         public string? AcadmicYear { get; set; }
         public string? College { get; set; }
         public string? FrontIdImage { get; set; }

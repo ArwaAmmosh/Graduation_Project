@@ -17,7 +17,6 @@ global using Graduation_Project.Features.Users.commands.Models;
 global using Graduation_Project.Features.Users.Queries.Models;
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Mvc;
-global using System.Drawing.Text;
 global using Graduation_Project.Services.Abstracts;
 global using Graduation_Project.Services.Implemention;
 global using Graduation_Project.Service;
@@ -26,7 +25,6 @@ global using Microsoft.AspNetCore.Mvc.Routing;
 global using Graduation_Project.Entities.Identity;
 global using Graduation_Project.Infrastructure.Abstract;
 global using Graduation_Project.Infrastructure.Repository;
-global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Options;
 global using FluentValidation;
 global using Graduation_Project.Features.Authorization.Commands.Models;
@@ -38,8 +36,18 @@ global using Graduation_Project.Seeder;
 global using Graduation_Project.Helpers.DTOs;
 global using Graduation_Project.Features.Authorization.Queries.Models;
 global using Graduation_Project.Features.Authorization.Queries.Results;
-
-
+global using MailKit.Net.Smtp;
+global using MimeKit;
+global using Graduation_Project.Features.Authentication.Command.Models;
+global using Graduation_Project.Features.Authentication.Queries.Models;
+global using System.IdentityModel.Tokens.Jwt;
+global using Graduation_Project.Services.AuthServices.Interface;
+global using Graduation_Project.Services.AuthServices.Implementation;
+global using Graduation_Project.Dtos;
+global using System.Security.Claims;
+global using Graduation_Project.Filters;
+global using Serilog;
+using Graduation_Project.MiddleWare;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -80,14 +88,20 @@ builder.Services.AddTransient<IUrlHelper>(x =>
     var factory = x.GetRequiredService<IUrlHelperFactory>();
     return factory.GetUrlHelper(actionContext);
 });
+builder.Services.AddTransient<AuthFilter>();
+Log.Logger = new LoggerConfiguration()
+              .ReadFrom.Configuration(builder.Configuration).CreateLogger();
+builder.Services.AddSerilog();
 var app = builder.Build();
+app.UseMiddleware<ErrorHandlerMiddleware>();
 using (var scope = app.Services.CreateScope())
 {
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
     await RoleSeeder.SeedAsync(roleManager);
-    await UserSeeder.SeedAsync(userManager);
+   await UserSeeder.SeedAsync(userManager);
 }
+
 var options = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
 app.UseRequestLocalization(options.Value);
 // Configure the HTTP request pipeline.
@@ -100,6 +114,6 @@ app.UseStaticFiles();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
 app.UseMiddleware<ExceptionMiddleware>();
+app.MapControllers();
 app.Run();

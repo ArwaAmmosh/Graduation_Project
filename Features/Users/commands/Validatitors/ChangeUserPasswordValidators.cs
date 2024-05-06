@@ -21,9 +21,6 @@ namespace Graduation_Project.Features.Users.commands.Validatitors
         #region Handle Functions
         public void ApplyValidationRules()
         {
-            RuleFor(x => x.Id)
-                .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
-                .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);
             RuleFor(x => x.CurrentPassword)
               .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
               .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);

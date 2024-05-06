@@ -8,7 +8,9 @@ namespace Graduation_Project.Features.Authentication.Command.Handlers
 {
     public class AuthenticationCommandHandler : ResponseHandler,
                                                IRequestHandler<SignInCommand, Response<JwtAuthResult>>,
-                                               IRequestHandler<RefreshTokenCommand, Response<JwtAuthResult>>
+                                               IRequestHandler<RefreshTokenCommand, Response<JwtAuthResult>>,
+                                               IRequestHandler<SendResetPasswordCommand, Response<string>>,
+                                               IRequestHandler<ResetPasswordCommand, Response<string>>
 
 
 
@@ -50,8 +52,8 @@ namespace Graduation_Project.Features.Authentication.Command.Handlers
             //if Failed Return Passord is wrong
             if (!signInResult.Succeeded) return BadRequest<JwtAuthResult>(_stringLocalizer[SharedResourcesKeys.PasswordNotCorrect]);
             //confirm email
-           /*if (!user.EmailConfirmed)
-                return BadRequest<JwtAuthResult>(_stringLocalizer[SharedResourcesKeys.EmailNotConfirmed]);*/
+           if (!user.EmailConfirmed)
+                return BadRequest<JwtAuthResult>(_stringLocalizer[SharedResourcesKeys.EmailNotConfirmed]);
             //Generate Token
             var result = await _authenticationService.GetJWTToken(user);
             //return Token 
@@ -81,7 +83,7 @@ namespace Graduation_Project.Features.Authentication.Command.Handlers
             return Success(result);
         }
 
-     /*  public async Task<Response<string>> Handle(SendResetPasswordCommand request, CancellationToken cancellationToken)
+      public async Task<Response<string>> Handle(SendResetPasswordCommand request, CancellationToken cancellationToken)
         {
             var result = await _authenticationService.SendResetPasswordCode(request.Email);
             switch (result)
@@ -93,7 +95,7 @@ namespace Graduation_Project.Features.Authentication.Command.Handlers
                 default: return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.TryAgainInAnotherTime]);
             }
         }
-
+    
         public async Task<Response<string>> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
         {
             var result = await _authenticationService.ResetPassword(request.Email, request.Password);
@@ -105,7 +107,7 @@ namespace Graduation_Project.Features.Authentication.Command.Handlers
                 default: return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.InvaildCode]);
             }
         }
-        */
+        
         #endregion
 
     } }

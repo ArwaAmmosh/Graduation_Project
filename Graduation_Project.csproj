@@ -8,16 +8,23 @@
 
   <ItemGroup>
     <Compile Remove="Features\Users\Queries\Handlers\**" />
+    <Compile Remove="Properties\NewFolder\**" />
     <Content Remove="Features\Users\Queries\Handlers\**" />
+    <Content Remove="Properties\NewFolder\**" />
     <EmbeddedResource Remove="Features\Users\Queries\Handlers\**" />
+    <EmbeddedResource Remove="Properties\NewFolder\**" />
     <None Remove="Features\Users\Queries\Handlers\**" />
+    <None Remove="Properties\NewFolder\**" />
+    <_WebToolingArtifacts Remove="Properties\NewFolder\**" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="EntityFrameworkCore.EncryptColumn" Version="6.0.8" />
     <PackageReference Include="FluentValidation" Version="11.9.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    <PackageReference Include="MailKit" Version="4.5.0" />
     <PackageReference Include="MediatR" Version="12.2.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
     <PackageReference Include="Microsoft.AspNet.Identity.EntityFramework" Version="2.2.4" />
@@ -37,6 +44,9 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
     <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="17.9.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.12" />
+    <PackageReference Include="MimeKit" Version="4.5.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
+    <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="6.6.0" />
     <PackageReference Include="SharpDX.DXGI" Version="4.2.0" />
     <PackageReference Include="SolrNet.Core" Version="1.1.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
