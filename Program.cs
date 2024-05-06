@@ -57,9 +57,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddServiceRegisteration(builder.Configuration);
 builder.Services.AddAuthentication();
 builder.Services.AddDbContext<UNITOOLDbContext>();
-builder.Services.AddScoped<CurrentUserService>();
-builder.Services.AddScoped<ToolManager>();
-
+builder.Services.AddScoped<CurrentUserService>(); // Added line
 #region Localization
 builder.Services.AddControllersWithViews();
 builder.Services.AddLocalization(opt => opt.ResourcesPath = "");
