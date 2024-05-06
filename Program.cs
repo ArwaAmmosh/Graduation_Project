@@ -89,9 +89,9 @@ builder.Services.AddTransient<IUrlHelper>(x =>
     return factory.GetUrlHelper(actionContext);
 });
 builder.Services.AddTransient<AuthFilter>();
-Log.Logger = new LoggerConfiguration()
+/*Log.Logger = new LoggerConfiguration()
               .ReadFrom.Configuration(builder.Configuration).CreateLogger();
-builder.Services.AddSerilog();
+builder.Services.AddSerilog();*/
 var app = builder.Build();
 app.UseMiddleware<ErrorHandlerMiddleware>();
 using (var scope = app.Services.CreateScope())
