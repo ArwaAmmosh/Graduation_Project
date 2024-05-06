@@ -7,6 +7,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Identity;
+using EntityFrameworkCore.EncryptColumn.Interfaces;
+using EntityFrameworkCore.EncryptColumn.Util;
+
 namespace Graduation_Project.Services.Implemention
 {
     public class AuthenticationService : IAuthenticationService
@@ -15,17 +18,26 @@ namespace Graduation_Project.Services.Implemention
         private readonly JwtSettings _jwtSettings;
         private readonly UserManager<User> _userManager;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
+        private readonly UNITOOLDbContext _unitoolDbContext;
+        private readonly IEmailsService _emailService;
+        private readonly IEncryptionProvider _encryptionProvider;
 
         #endregion 
 
         #region Constructors
         public AuthenticationService(JwtSettings jwtSettings,
                                      UserManager<User> userManager,
-                                     IRefreshTokenRepository refreshTokenRepository)
+                                     IRefreshTokenRepository refreshTokenRepository,
+                                     UNITOOLDbContext unitoolDbContext,
+                                     IEmailsService emailService)
         {
             _jwtSettings = jwtSettings;
             _userManager = userManager;
             _refreshTokenRepository = refreshTokenRepository;
+            _unitoolDbContext = unitoolDbContext;
+            _emailService = emailService;
+            _encryptionProvider = new GenerateEncryptionProvider("8a4dcaaec64d412380fe4b02193cd26f");
+
         }
 
 
@@ -64,24 +76,43 @@ namespace Graduation_Project.Services.Implemention
             randomNumberGenerate.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);
         }
-        public List<Claim> GetClaims(User user,List<string> roles)
+        public async Task<List<Claim>> GetClaims(User user)
         {
             var claims = new List<Claim>
             {
                 new Claim(nameof(UserClaimModel.Id), user.Id.ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.UserName),
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(nameof(UserClaimModel.UserName), user.UserName),
                 new Claim(nameof(UserClaimModel.Email), user.Email),
-                new Claim(nameof(UserClaimModel.Univserity), user.Univserity)
+                new Claim(nameof(UserClaimModel.Univserity), user.Univserity),
+                new Claim(nameof(UserClaimModel.FirstName), user.FirstName),
+                new Claim(nameof(UserClaimModel.LastName), user.LastName),
+   };
+            var roles = await _userManager.GetRolesAsync(user);
+            var userClaims = await _userManager.GetClaimsAsync(user);
+            if (user.AcadmicYear != null)
+            {
+                claims.Add(new Claim(nameof(UserClaimModel.AcadmicYear), user.AcadmicYear));
+            }
+            if (user.College != null)
+            {
+                claims.Add(new Claim(nameof(UserClaimModel.College), user.College));
+            }
+            if (user.Government != null)
+            {
+                claims.Add(new Claim(nameof(UserClaimModel.Government), user.Government));
+            }
+            if (user.PersonalImage != null)
+            {
+                claims.Add(new Claim(nameof(UserClaimModel.PersonalImage), user.PersonalImage));
+            }
 
-
-
-            };
-            foreach(var role in roles)
+            foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
+            claims.AddRange(userClaims);
             return claims;
         } 
         private RefreshToken GetRefreshToken(string userName)
@@ -96,8 +127,7 @@ namespace Graduation_Project.Services.Implemention
         }
         private async Task<(JwtSecurityToken, string)> GenerateJWTToken(User user)
         {
-            var roles= await _userManager.GetRolesAsync(user);
-            var claims = GetClaims(user,roles.ToList());
+            var claims = await GetClaims(user);
             var jwtToken = new JwtSecurityToken(
                 _jwtSettings.Issuer,
                 _jwtSettings.Audience,
@@ -196,10 +226,88 @@ namespace Graduation_Project.Services.Implemention
 
         }
 
+        public async Task<string> ConfirmEmail(int? userId, string? code)
+        {
+            if (userId == null || code == null)
+                return "ErrorWhenConfirmEmail";
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            var confirmEmail = await _userManager.ConfirmEmailAsync(user, code);
+            if (!confirmEmail.Succeeded)
+                return "ErrorWhenConfirmEmail";
+            return "Success";
+        }
 
+        public async Task<string> SendResetPasswordCode(string Email)
+        {
+            var trans = await _unitoolDbContext.Database.BeginTransactionAsync();
+            try
+            {
+                //user
+                var user = await _userManager.FindByEmailAsync(Email);
+                //user not Exist => not found
+                if (user == null)
+                    return "UserNotFound";
+                //Generate Random Number
+                var chars = "0123456789";
+                var random = new Random();
+                var randomNumber = new string(Enumerable.Repeat(chars, 6).Select(s => s[random.Next(s.Length)]).ToArray());
 
+                //update User In Database Code
+                user.Code = randomNumber;
+                var updateResult = await _userManager.UpdateAsync(user);
+                if (!updateResult.Succeeded)
+                    return "ErrorInUpdateUser";
+                var message = "Code To Reset Passsword : " + user.Code;
+                //Send Code To  Email 
+                await _emailService.SendEmail(user.Email, message, "Reset Password");
+                await trans.CommitAsync();
+                return "Success";
+            }
+            catch (Exception ex)
+            {
+                await trans.RollbackAsync();
+                return "Failed";
+            }
+        }
+        public async Task<string> ConfirmResetPassword(string Code, string Email)
+        {
+            //Get User
+            //user
+            var user = await _userManager.FindByEmailAsync(Email);
+            //user not Exist => not found
+            if (user == null)
+                return "UserNotFound";
+            //Decrept Code From Database User Code
+            var userCode = user.Code;
+            //Equal With Code
+            if (userCode == Code) return "Success";
+            return "Failed";
+        }
 
-
+        public async Task<string> ResetPassword(string Email, string Password)
+        {
+            var trans = await _unitoolDbContext.Database.BeginTransactionAsync();
+            try
+            {
+                //Get User
+                var user = await _userManager.FindByEmailAsync(Email);
+                //user not Exist => not found
+                if (user == null)
+                    return "UserNotFound";
+                await _userManager.RemovePasswordAsync(user);
+                if (!await _userManager.HasPasswordAsync(user))
+                {
+                    await _userManager.AddPasswordAsync(user, Password);
+                }
+                await trans.CommitAsync();
+                return "Success";
+            }
+            catch (Exception ex)
+            {
+                await trans.RollbackAsync();
+                return "Failed";
+            }
+        }
 
 
         #endregion

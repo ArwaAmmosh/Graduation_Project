@@ -1,6 +1,6 @@
 ﻿namespace Graduation_Project.Features.Users.commands.Models
 {
-    public class AddUserCommand : IRequest<Graduation_Project.Bases.Response<string>>
+    public class AddUserCommand : IRequest<Response<string>>
     {
 #pragma warning disable CS8618 // Non-nullable property 'FirstName' must contain a non-null value when exiting constructor. Consider declaring the property as nullable.
         public string FirstName { get; set; }

@@ -1,4 +1,5 @@
 ﻿using Graduation_Project.Entities.Identity;
+using Graduation_Project.Helpers;
 using Graduation_Project.Mapping.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
@@ -14,7 +15,7 @@ namespace Graduation_Project.Services
             services.AddIdentity<User, Role>(option =>
             {
                 //signin
-                option.SignIn.RequireConfirmedEmail = false;
+                option.SignIn.RequireConfirmedEmail = true;
                 //user
                 option.User.RequireUniqueEmail = true;
 
@@ -36,6 +37,9 @@ namespace Graduation_Project.Services
             var jwtSettings = new JwtSettings();
             configuration.GetSection(nameof(jwtSettings)).Bind(jwtSettings);
             services.AddSingleton(jwtSettings);
+            var emailSettings = new EmailSettings();
+            configuration.GetSection(nameof(emailSettings)).Bind(emailSettings);
+            services.AddSingleton(emailSettings);
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -96,7 +100,7 @@ namespace Graduation_Project.Services
             {
                 options.AddPolicy("Registeriation", policy =>
                 {
-                    policy.RequireClaim("Registeriation", "true");
+                    policy.RequireClaim("Registeriation", "True");
                 }
                 );
             }
