@@ -7,7 +7,7 @@ namespace Graduation_Project.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin,User")]
+    [Authorize]
     public class EmailsController : AppControllerBase
     {
 

@@ -6,7 +6,7 @@ namespace Graduation_Project.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles ="SuperAdmin")]
     public class AuthorizationController : AppControllerBase
     {
         [HttpPost("AddNewRole")]

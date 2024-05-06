@@ -22,14 +22,14 @@ namespace Graduation.Controllers
             return Ok(response);
         }
         [HttpGet("GetUserById")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
         public async Task<IActionResult> GetUserById([FromQuery] int id)
         {
             var response = await Mediator.Send(new GetUserByIdQuery(id));
             return Ok(response);
         }
         [HttpPut("UpdateUserInformation")]
-        [Authorize(Roles = "ViewUser,Admin")]
+        [Authorize(Roles = "ViewUser")]
         public async Task<IActionResult> Update([FromForm] UpdateUserCommand command)
         {
             var response = await Mediator.Send(command);
