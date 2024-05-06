@@ -1,18 +1,11 @@
-﻿using AutoMapper;
-using Graduation_Project.Bases;
+﻿
 using Graduation_Project.Entities.Identity;
-using Graduation_Project.Features.Users.commands.Models;
-using Graduation_Project.Resource;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Localization;
-using SharpDX.DXGI;
 
 namespace Graduation_Project.Features.Users.commands.Handlers
 
 {
     public class UserCommandHandler : ResponseHandler,
-                                      IRequestHandler<AddUserCommand, Bases.Response<string>>, 
+                                      IRequestHandler<AddUserCommand, Response<string>>, 
                                       IRequestHandler<UpdateUserCommand, Response<string>>,
                                       IRequestHandler<DeleteUserCommand, Response<string>>,
                                       IRequestHandler<ChangeUserPasswordCommand, Response<string>>
@@ -24,16 +17,24 @@ namespace Graduation_Project.Features.Users.commands.Handlers
         private readonly IMapper _mapper;
         private readonly IStringLocalizer<SharedResource> _sharedResource;
         private readonly UserManager<User> _userManager;
-        private readonly IUserService userService;
-
+        private readonly IUserService _userService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IEmailsService _emailsService;
+        private readonly ICurrentUserService _currentUserService;
+        
         #endregion
         #region Constructor
-        public UserCommandHandler(IStringLocalizer<SharedResource> stringLocalizer, IMapper mapper, UserManager<User> userManager) : base(stringLocalizer)
+        public UserCommandHandler(IStringLocalizer<SharedResource> stringLocalizer, IMapper mapper, UserManager<User> userManager,IHttpContextAccessor httpContextAccessor, IEmailsService emailsService,IUserService userService,ICurrentUserService currentUserService) : base(stringLocalizer)
         {
 
             _sharedResource = stringLocalizer;
             _mapper = mapper;
             _userManager = userManager;
+            _httpContextAccessor = httpContextAccessor;
+            _emailsService = emailsService;
+            _userService = userService;
+            _currentUserService = currentUserService;
+            
         }
 
 
@@ -41,28 +42,26 @@ namespace Graduation_Project.Features.Users.commands.Handlers
         #region Handle Functions
         public async Task<Bases.Response<string>> Handle(AddUserCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
-            if (user != null)
-            {
-                return BadRequest<string>(_sharedResource[SharedResourcesKeys.EmailIsExist]);
-            }
             var identityUser = _mapper.Map<User>(request);
-            identityUser.UserName = identityUser.FirstName + identityUser.LastName;
-            var creatResult = await _userManager.CreateAsync(identityUser, request.Password);
-            if (!creatResult.Succeeded)
+            //Create
+            var createResult = await _userService.CreateAsync(identityUser, request.Password);
+            switch (createResult)
             {
-                return BadRequest<string>(creatResult.Errors.FirstOrDefault().Description);
+                case "EmailIsExist": return BadRequest<string>(_sharedResource[SharedResourcesKeys.EmailIsExist]);
+                case "UserNameIsExist": return BadRequest<string>(_sharedResource[SharedResourcesKeys.UserNameIsExist]);
+                case "ErrorInCreateUser": return BadRequest<string>(_sharedResource[SharedResourcesKeys.FaildToAddUser]);
+                case "Failed": return BadRequest<string>(_sharedResource[SharedResourcesKeys.TryToRegisterAgain]);
+                case "Success": return Success<string>("");
+                default: return BadRequest<string>(createResult);
             }
-            
-                await _userManager.AddToRoleAsync(identityUser, "User");
-            
-            return Created("");
         }
+
+    
 
         public async Task<Response<string>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
             //check if user is exist
-            var oldUser = await _userManager.FindByIdAsync(request.Id.ToString());
+            var oldUser = await _userManager.FindByIdAsync(_currentUserService.GetUserId().ToString());
             //if Not Exist notfound
             if (oldUser == null) return NotFound<string>();
             //mapping
@@ -75,13 +74,14 @@ namespace Graduation_Project.Features.Users.commands.Handlers
             {
                 return BadRequest<string>(_sharedResource[SharedResourcesKeys.UserNameIsExist]);
             }
-            newUser.FrontIdImage = await userService.UploadFrontIdImage(request.FrontIdImage);
-            newUser.BackIdImage = await userService.UploadBackIdImage(request.BackIdImage);
-            newUser.CollegeCardBackImage = await userService.UploadCollegeCardBackImage(request.CollegeCardBackImage);
-            newUser.CollegeCardFrontImage = await userService.UploadCollegeCardFrontImage(request.CollegeCardFrontImage);
-            newUser.PersonalImage = await userService.UploadPersonalImage(request.PersonalImage);
+            newUser.FrontIdImage = await _userService.UploadFrontIdImage(request.FrontIdImage);
+            newUser.BackIdImage = await _userService.UploadBackIdImage(request.BackIdImage);
+            newUser.CollegeCardBackImage = await _userService.UploadCollegeCardBackImage(request.CollegeCardBackImage);
+            newUser.CollegeCardFrontImage = await _userService.UploadCollegeCardFrontImage(request.CollegeCardFrontImage);
+            newUser.PersonalImage = await _userService.UploadPersonalImage(request.PersonalImage);
 
-
+            await _userManager.RemoveFromRoleAsync(newUser, "ViewUser");
+            await _userManager.AddToRoleAsync(newUser, "AdmittedUser");
             //update
             var result = await _userManager.UpdateAsync(newUser);
             //result is not success
@@ -92,7 +92,7 @@ namespace Graduation_Project.Features.Users.commands.Handlers
 
         public async Task<Response<string>> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
         {
-            var user=await _userManager.FindByIdAsync(request.Id.ToString());
+            var user=await _userManager.FindByIdAsync(_currentUserService.GetUserId().ToString());
             if (user == null)
             {
                 return NotFound<string>();
@@ -107,7 +107,7 @@ namespace Graduation_Project.Features.Users.commands.Handlers
 
         public async Task<Response<string>> Handle(ChangeUserPasswordCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByIdAsync(request.Id.ToString());
+            var user = await _userManager.FindByIdAsync(_currentUserService.GetUserId().ToString());
             if (user == null)
             {
                 return NotFound<string>();

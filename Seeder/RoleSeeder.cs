@@ -9,7 +9,19 @@
             {
                 await _roleManager.CreateAsync(new Role()
                 {
+                    Name = "SuperAdmin"
+                });
+                await _roleManager.CreateAsync(new Role()
+                {
                     Name = "Admin"
+                });
+                await _roleManager.CreateAsync(new Role()
+                {
+                    Name = "AdmittedUser"
+                });
+                await _roleManager.CreateAsync(new Role()
+                {
+                    Name = "ViewUser"
                 });
                 await _roleManager.CreateAsync(new Role()
                 {
