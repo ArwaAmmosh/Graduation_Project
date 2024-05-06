@@ -4,7 +4,7 @@
     {
         public static async Task SeedAsync(UserManager<User> _userManager)
         {
-            var usersCount = await _userManager.Users.CountAsync();
+            var usersCount=await _userManager.Users.CountAsync();
             if (usersCount <= 0)
             {
                 var defaultUser = new User()
@@ -21,10 +21,9 @@
                     SecurityStamp = Guid.NewGuid().ToString()
 
                 };
-                await _userManager.CreateAsync(defaultUser, "@UNITool123");
+                await _userManager.CreateAsync(defaultUser, "@UNITOOL");
                 await _userManager.AddToRoleAsync(defaultUser, "SuperAdmin");
             }
         }
     }
 }
-

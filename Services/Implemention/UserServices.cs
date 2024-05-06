@@ -142,10 +142,11 @@ namespace Graduation_Project.Services.Implemention
                     //Failed
                     if (!createResult.Succeeded)
                         return string.Join(",", createResult.Errors.Select(x => x.Description).ToList());
-             
+
                     await _userManager.AddToRoleAsync(user, "ViewUser");
-                //Send Confirm Email
-                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                    //Send Confirm Email
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var resquestAccessor = _httpContextAccessor.HttpContext.Request;
                     var returnUrl = resquestAccessor.Scheme + "://" + resquestAccessor.Host + _urlHelper.Action("ConfirmEmail", "Authentication", new { userId = user.Id, code = code });
                     var message = $"To Confirm Email Click Link: <a href='{returnUrl}'>Link Of Confirmation</a>";

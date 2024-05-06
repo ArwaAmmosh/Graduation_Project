@@ -17,6 +17,7 @@ global using Graduation_Project.Features.Users.commands.Models;
 global using Graduation_Project.Features.Users.Queries.Models;
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Mvc;
+global using System.Drawing.Text;
 global using Graduation_Project.Services.Abstracts;
 global using Graduation_Project.Services.Implemention;
 global using Graduation_Project.Service;
@@ -25,6 +26,7 @@ global using Microsoft.AspNetCore.Mvc.Routing;
 global using Graduation_Project.Entities.Identity;
 global using Graduation_Project.Infrastructure.Abstract;
 global using Graduation_Project.Infrastructure.Repository;
+global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Options;
 global using FluentValidation;
 global using Graduation_Project.Features.Authorization.Commands.Models;
@@ -44,7 +46,9 @@ global using System.IdentityModel.Tokens.Jwt;
 global using Graduation_Project.Services.AuthServices.Interface;
 global using Graduation_Project.Services.AuthServices.Implementation;
 global using Graduation_Project.Dtos;
+global using Microsoft.AspNetCore.Http;
 global using System.Security.Claims;
+global using System.Threading.Tasks;
 global using Graduation_Project.Filters;
 global using Serilog;
 using Graduation_Project.MiddleWare;
@@ -57,9 +61,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddServiceRegisteration(builder.Configuration);
 builder.Services.AddAuthentication();
 builder.Services.AddDbContext<UNITOOLDbContext>();
-builder.Services.AddScoped<CurrentUserService>();
-builder.Services.AddScoped<ToolManager>();
-
+builder.Services.AddScoped<CurrentUserService>(); // Added line
 #region Localization
 builder.Services.AddControllersWithViews();
 builder.Services.AddLocalization(opt => opt.ResourcesPath = "");
@@ -99,9 +101,8 @@ using (var scope = app.Services.CreateScope())
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
     await RoleSeeder.SeedAsync(roleManager);
-   await UserSeeder.SeedAsync(userManager);
+    await UserSeeder.SeedAsync(userManager);
 }
-
 var options = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
 app.UseRequestLocalization(options.Value);
 // Configure the HTTP request pipeline.
