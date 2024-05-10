@@ -17,7 +17,7 @@ namespace Graduation_Project.Entities
         }
         public UNITOOLDbContext(DbContextOptions<UNITOOLDbContext> options) : base(options)
         {
-             _encryptionProvider = new GenerateEncryptionProvider("8a4dcaaec64d412380fe4b02193cd26f");
+            // _encryptionProvider = new GenerateEncryptionProvider("8a4dcaaec64d412380fe4b02193cd26f");
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -25,6 +25,7 @@ namespace Graduation_Project.Entities
         }
         public DbSet<UserRefreshToken> RefreshTokens { get; set; }
         public DbSet<Tool> Tools { get; set; }
+        public DbSet<ToolPhoto> ToolPhotos { get; set; }
         public DbSet<FavoriteTool> FavoriteTool { get; set; }
         public DbSet<GuestModeUser> GuestModes { get; set; }
 
@@ -58,7 +59,7 @@ namespace Graduation_Project.Entities
 
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-            modelBuilder.UseEncryption(_encryptionProvider);
+           // modelBuilder.UseEncryption(_encryptionProvider);
         }
     }
 
