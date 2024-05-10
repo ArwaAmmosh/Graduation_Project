@@ -21,9 +21,6 @@ namespace Graduation_Project.Features.Authentication.Queries.Validators
         #region Actions
         public void ApplyValidationsRules()
         {
-            RuleFor(x => x.UserId)
-                 .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
-                 .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);
 
             RuleFor(x => x.Code)
                 .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])

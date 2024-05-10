@@ -58,6 +58,8 @@
         public const string NoImage = "NoImage";
         public const string FailedToUploadImage = "FailedToUploadImage";
         public const string NumberOfRequiredDigits = "Number Of Digits Must Be 14";
+        public const string FaildToAddGuestInformation = "FaildToAddGuestInformation";
+
 
 
 

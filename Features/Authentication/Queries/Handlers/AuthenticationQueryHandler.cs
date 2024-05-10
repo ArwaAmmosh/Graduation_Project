@@ -15,15 +15,17 @@ namespace Graduation_Project.Features.Authentication.Queries.Handlers
         #region Fields
         private readonly IStringLocalizer<SharedResource> _stringLocalizer;
         private readonly IAuthenticationService _authenticationService;
-
+        private readonly ICurrentUserService _currentUserService;
         #endregion
 
         #region Constructors
         public AuthenticationQueryHandler(IStringLocalizer<SharedResource> stringLocalizer,
-                                            IAuthenticationService authenticationService) : base(stringLocalizer)
+                                            IAuthenticationService authenticationService,
+                                            ICurrentUserService currentUserService) : base(stringLocalizer)
         {
             _stringLocalizer = stringLocalizer;
             _authenticationService = authenticationService;
+            _currentUserService = currentUserService;
         }
 
 
@@ -38,7 +40,8 @@ namespace Graduation_Project.Features.Authentication.Queries.Handlers
         }
         public async Task<Response<string>> Handle(ConfirmEmailQuery request, CancellationToken cancellationToken)
         {
-            var confirmEmail = await _authenticationService.ConfirmEmail(request.UserId, request.Code);
+            var userId=_currentUserService.GetUserId();
+            var confirmEmail = await _authenticationService.ConfirmEmail(userId, request.Code);
             if (confirmEmail == "ErrorWhenConfirmEmail")
                 return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.ErrorWhenConfirmEmail]);
             return Success<string>(_stringLocalizer[SharedResourcesKeys.ConfirmEmailDone]);

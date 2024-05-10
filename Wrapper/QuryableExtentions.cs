@@ -2,8 +2,7 @@
 {
     public static class QuryableExtentions
     {
-        public static async Task<PaginatedResult<T>> ToPaginatedListAsync<T>(this IQueryable<T> source, int pageNumber, int pageSize)
-           where T : class
+        public static async Task<PaginatedResult<T>> ToPaginatedListAsync<T>(this IQueryable<T> source, int pageNumber, int pageSize)   where T : class
         {
             if (source == null)
             {

@@ -1,8 +1,5 @@
-﻿using Graduation_Project.Dtos;
-using Graduation_Project.Features.Tool.Queries.Models;
+﻿using Graduation_Project.Entities.Identity;
 using Graduation_Project.Wrapper;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace Graduation_Project.Controllers
 {
@@ -22,7 +19,7 @@ namespace Graduation_Project.Controllers
         }
 
         //All Tool 
-        [HttpGet]
+        [HttpGet("Pagination")]
         public async Task<ActionResult<PaginatedResult<ToolDto>>> GetTools(int pageNumber = 1, int pageSize = 10)
         {
             var toolsQuery = _context.Tools
@@ -33,7 +30,12 @@ namespace Graduation_Project.Controllers
                     RentTime = t.RentTime,
                     Price = t.Price,
                     College = t.College,
-                    University = t.University
+                    University = t.University,
+                    ToolImages1 = t.ToolImages1,
+                    ToolImages2 = t.ToolImages2,
+                    ToolImages3 = t.ToolImages3,
+                    ToolImages4 = t.ToolImages4,
+                    Department = t.Department
                 })
                 .ToList(); // Materialize the query into a list
 
@@ -41,8 +43,7 @@ namespace Graduation_Project.Controllers
 
             return Ok(paginatedTools);
 
-            //var response = await Mediator.Send(query);
-            //return Ok(response);
+
         }
 
 
@@ -60,7 +61,13 @@ namespace Graduation_Project.Controllers
                     RentTime = t.RentTime,
                     Price = t.Price,
                     College = t.College,
-                    University = t.University
+                    University = t.University,
+                    ToolImages1 = t.ToolImages1,
+                    ToolImages2 = t.ToolImages2,
+                    ToolImages3 = t.ToolImages3,
+                    ToolImages4 = t.ToolImages4,
+                    Department = t.Department
+
                 })
                 .ToList(); // Materialize the query into a list
 
@@ -82,7 +89,14 @@ namespace Graduation_Project.Controllers
                     RentTime = t.RentTime,
                     Price = t.Price,
                     College = t.College,
-                    University = t.University
+                    University = t.University,
+                    ToolImages1 = t.ToolImages1,
+                    ToolImages2 = t.ToolImages2,
+                    ToolImages3 = t.ToolImages3,
+                    ToolImages4 = t.ToolImages4,
+                    Department = t.Department
+
+
                 })
                 .ToListAsync();
 
@@ -112,7 +126,13 @@ namespace Graduation_Project.Controllers
                     RentTime = t.RentTime,
                     Price = t.Price,
                     College = t.College,
-                    University = t.University
+                    University = t.University,
+                    ToolImages1 = t.ToolImages1,
+                    ToolImages2 = t.ToolImages2,
+                    ToolImages3 = t.ToolImages3,
+                    ToolImages4 = t.ToolImages4,
+                    Department = t.Department
+
                 })
                 .ToList(); // Materialize the query into a list
 
@@ -122,7 +142,7 @@ namespace Graduation_Project.Controllers
         }
 
         //Update //// PUT: api/Tool/{id}
-        [HttpPut("{id}")]
+        [HttpPut("UpdateTool/{id}")]
         public async Task<IActionResult> UpdateTool(int id, UpdateToolDto updateToolDto)
         {
             if (id != updateToolDto.ToolId)
@@ -144,6 +164,10 @@ namespace Graduation_Project.Controllers
             existingTool.College = updateToolDto.College;
             existingTool.University = updateToolDto.University;
             existingTool.Acadmicyear = updateToolDto.Acadmicyear;
+            existingTool.ToolImages1 = updateToolDto.ToolImages1;
+            existingTool.ToolImages2 = updateToolDto.ToolImages2;
+            existingTool.ToolImages3 = updateToolDto.ToolImages3;
+            existingTool.ToolImages4 = updateToolDto.ToolImages4;
 
             try
             {
@@ -165,27 +189,42 @@ namespace Graduation_Project.Controllers
         }
 
         // DELETE: api/Tools/{id}
-        [HttpDelete("{id}")]
+        
+        [HttpDelete("DeleteTool/{id}")]
         public async Task<IActionResult> DeleteTool(int id)
         {
-            var tool = await _context.Tools.FindAsync(id);
-            if (tool == null)
+            var tools =_context.FavoriteTool.Where(t => t.ToolId == id).ToList();
+            foreach (var tool in tools)
             {
-                return NotFound();
+                _context.FavoriteTool.Remove(tool);
             }
-
-            _context.Tools.Remove(tool);
             await _context.SaveChangesAsync();
+            try
+            {
+                var tool = await _context.Tools.FindAsync(id);
+                if (tool == null)
+                {
+                    return NotFound();
+                }
 
-            return NoContent();
+                _context.Tools.Remove(tool);
+                await _context.SaveChangesAsync();
+
+                return NoContent(); // Return 204 No Content on successful deletion
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                // Log the error or handle it appropriately
+                Console.WriteLine(ex.Message);
+                return StatusCode(500, "An error occurred while deleting the tool.");
+            }
         }
-
         //GET tool user ADD
         [Authorize]
-        [HttpGet("mytools")]
+        [HttpGet("GetUserTools")]
         public async Task<ActionResult<IEnumerable<Tool>>> GetMyTools()
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var userId = _currentUserService.GetUserId();
 
             // Retrieve tools associated with the current user
             var userTools = await _context.Tools.Where(t => t.UserId == userId).ToListAsync();
@@ -205,17 +244,18 @@ namespace Graduation_Project.Controllers
             return tool;
         }
         // POST: api/Tools
-        [HttpPost]
+        [HttpPost("AddnewTool")]
         [Authorize]
         public async Task<ActionResult<Tool>> PostTool([FromForm] ToolPostDto toolPostDto)
         {
-           var image1 = await toolServices.Upload1Image(toolPostDto.ToolImages1);
+            var image1 = await toolServices.Upload1Image(toolPostDto.ToolImages1);
             var image2 = await toolServices.Upload2Image(toolPostDto.ToolImages2);
             var image3 = await toolServices.Upload3Image(toolPostDto.ToolImages3);
             var image4 = await toolServices.Upload4Image(toolPostDto.ToolImages4);
 
             var userId =_currentUserService.GetUserId();
-            if (userId != null)
+            var user = await _currentUserService.GetUserAsync();
+            if (user != null)
             {
                 // Map properties from DTO to Tool entity
                 var tool = new Tool
@@ -228,17 +268,17 @@ namespace Graduation_Project.Controllers
                     Category = toolPostDto.Category,
                     Price = toolPostDto.Price,
                     Acadmicyear = toolPostDto.Acadmicyear,
-                    UserId = userId,
-                    Department= toolPostDto.Department,
-                    ToolImages1=image1,
+                    Department = toolPostDto.Department,
+                    ToolImages1 = image1,
                     ToolImages2 = image2,
-                    ToolImages4=image4,
-                    ToolImages3 = image3
+                    ToolImages4 = image4,
+                    ToolImages3 = image3,
+                    UserId=userId
+                   
 
 
 
                 };
-
                 _context.Tools.Add(tool);
                 await _context.SaveChangesAsync();
 
@@ -257,6 +297,6 @@ namespace Graduation_Project.Controllers
 
 
     }
-    
+
 }
 
