@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿//using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -13,19 +13,21 @@ namespace Graduation_Project.Controllers
     public class FavoriteToolsController : ControllerBase
     {
         private readonly UNITOOLDbContext _context;
+        private readonly ICurrentUserService _currentUserService;
 
-        public FavoriteToolsController(UNITOOLDbContext context)
+        public FavoriteToolsController(UNITOOLDbContext context,ICurrentUserService currentUserService)
         {
             _context = context;
+            _currentUserService = currentUserService;
         }
 
-         //POST: api/FavoriteTools/{toolId}
+        //POST: api/FavoriteTools/{toolId}
         [Authorize]
         [HttpPost("{toolId}")]
         public async Task<IActionResult> AddToFavorites(int toolId)
         {
-            var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!int.TryParse(userIdString, out int userId))
+            var userIdString = _currentUserService.GetUserId() ;
+            if (userIdString==null)
             {
                 // Handle the case where the user ID cannot be parsed as an integer
                 return BadRequest("Invalid user ID format.");
@@ -39,15 +41,14 @@ namespace Graduation_Project.Controllers
             }
 
             // Check if the tool is already in the user's favorites
-            var existingFavorite = await _context.FavoriteTool
-                .FirstOrDefaultAsync(ft => ft.UserId == userId && ft.ToolId == toolId);
+            var existingFavorite = await _context.FavoriteTool.FirstOrDefaultAsync(ft => ft.UserId == userIdString && ft.ToolId == toolId);
             if (existingFavorite != null)
             {
                 return Conflict("Tool already exists in favorites.");
             }
 
             // Add the tool to the user's favorites
-            var favoriteTool = new FavoriteTool { UserId = userId, ToolId = toolId };
+            var favoriteTool = new FavoriteTool { UserId = userIdString, ToolId = toolId };
             _context.FavoriteTool.Add(favoriteTool);
             await _context.SaveChangesAsync();
 
@@ -69,7 +70,7 @@ namespace Graduation_Project.Controllers
             // Find the user's favorite tool
             var favoriteTool = await _context.FavoriteTool
                 .Include(ft => ft.Tool) // Include the Tool entity
-                .FirstOrDefaultAsync(ft => ft.UserId == userId);
+                .FirstOrDefaultAsync(ft => ft.User.Id == userId);
 
             if (favoriteTool == null)
             {
@@ -79,10 +80,10 @@ namespace Graduation_Project.Controllers
             // Return the favorite tool DTO
             var favoriteToolDto = new FavoriteToolDto
             {
-                
+
                 Name = favoriteTool.Tool.Name,
                 Description = favoriteTool.Tool.Description,
-                 
+
                 RentTime = favoriteTool.Tool.RentTime,
 
                 College = favoriteTool.Tool.College,
@@ -111,7 +112,7 @@ namespace Graduation_Project.Controllers
 
             // Find the favorite tool entry for the user and tool
             var favoriteTool = await _context.FavoriteTool
-                .FirstOrDefaultAsync(ft => ft.UserId == userId && ft.ToolId == toolId);
+                .FirstOrDefaultAsync(ft => ft.User.Id == userId && ft.Tool.ToolId == toolId);
             if (favoriteTool == null)
             {
                 return NotFound("Favorite tool not found.");
@@ -121,7 +122,7 @@ namespace Graduation_Project.Controllers
             _context.FavoriteTool.Remove(favoriteTool);
             await _context.SaveChangesAsync();
 
-            return NoContent(); 
+            return NoContent();
         }
     }
 }

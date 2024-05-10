@@ -69,11 +69,25 @@ namespace Graduation_Project.Features.Users.commands.Validatitors
             RuleFor(x => x.Government)
                 .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
                 .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);
+            RuleFor(x => x.BirthDate)
+                .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
+                .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required])           
+                .Must(BeAValidDate).WithMessage("Invalid date of birth")
+                .Must(BeUnderMaxDate).WithMessage("Date of birth must be on or before 18 years ago");
         }
 
         public void ApplyCustomValidationsRules()
         {
 
+        }
+        private bool BeAValidDate(DateTime date)
+        {
+            return date <= DateTime.Now;
+        }
+        private bool BeUnderMaxDate(DateTime date)
+        {
+            DateTime maxDate = DateTime.Now.AddYears(-18);
+            return date <= maxDate;
         }
 
         #endregion

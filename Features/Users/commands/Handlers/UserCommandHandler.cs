@@ -1,11 +1,10 @@
 ﻿
-using Graduation_Project.Entities.Identity;
 
 namespace Graduation_Project.Features.Users.commands.Handlers
 
 {
     public class UserCommandHandler : ResponseHandler,
-                                      IRequestHandler<AddUserCommand, Response<string>>, 
+                                      IRequestHandler<AddUserCommand, Response<JwtAuthResult>>, 
                                       IRequestHandler<UpdateUserCommand, Response<string>>,
                                       IRequestHandler<DeleteUserCommand, Response<string>>,
                                       IRequestHandler<ChangeUserPasswordCommand, Response<string>>
@@ -21,10 +20,11 @@ namespace Graduation_Project.Features.Users.commands.Handlers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEmailsService _emailsService;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IAuthenticationService _authenticationService;
         
         #endregion
         #region Constructor
-        public UserCommandHandler(IStringLocalizer<SharedResource> stringLocalizer, IMapper mapper, UserManager<User> userManager,IHttpContextAccessor httpContextAccessor, IEmailsService emailsService,IUserService userService,ICurrentUserService currentUserService) : base(stringLocalizer)
+        public UserCommandHandler(IStringLocalizer<SharedResource> stringLocalizer, IMapper mapper, UserManager<User> userManager,IHttpContextAccessor httpContextAccessor, IEmailsService emailsService,IUserService userService,ICurrentUserService currentUserService, IAuthenticationService authenticationService) : base(stringLocalizer)
         {
 
             _sharedResource = stringLocalizer;
@@ -34,25 +34,28 @@ namespace Graduation_Project.Features.Users.commands.Handlers
             _emailsService = emailsService;
             _userService = userService;
             _currentUserService = currentUserService;
+            _authenticationService = authenticationService;
             
         }
 
 
         #endregion
         #region Handle Functions
-        public async Task<Bases.Response<string>> Handle(AddUserCommand request, CancellationToken cancellationToken)
+        public async Task<Response<JwtAuthResult>> Handle(AddUserCommand request, CancellationToken cancellationToken)
         {
             var identityUser = _mapper.Map<User>(request);
             //Create
             var createResult = await _userService.CreateAsync(identityUser, request.Password);
             switch (createResult)
             {
-                case "EmailIsExist": return BadRequest<string>(_sharedResource[SharedResourcesKeys.EmailIsExist]);
-                case "UserNameIsExist": return BadRequest<string>(_sharedResource[SharedResourcesKeys.UserNameIsExist]);
-                case "ErrorInCreateUser": return BadRequest<string>(_sharedResource[SharedResourcesKeys.FaildToAddUser]);
-                case "Failed": return BadRequest<string>(_sharedResource[SharedResourcesKeys.TryToRegisterAgain]);
-                case "Success": return Success<string>("");
-                default: return BadRequest<string>(createResult);
+                case "EmailIsExist": return BadRequest<JwtAuthResult>(_sharedResource[SharedResourcesKeys.EmailIsExist]);
+                case "UserNameIsExist": return BadRequest<JwtAuthResult>(_sharedResource[SharedResourcesKeys.UserNameIsExist]);
+                case "ErrorInCreateUser": return BadRequest<JwtAuthResult>(_sharedResource[SharedResourcesKeys.FaildToAddUser]);
+                case "Failed": return BadRequest<JwtAuthResult>(_sharedResource[SharedResourcesKeys.TryToRegisterAgain]);
+                case "Success":
+                    var result = await _authenticationService.GetJWTToken(identityUser);
+                    return Success<JwtAuthResult>(result);
+                default: return BadRequest<JwtAuthResult>(createResult);
             }
         }
 

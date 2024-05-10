@@ -47,7 +47,12 @@ global using Graduation_Project.Dtos;
 global using System.Security.Claims;
 global using Graduation_Project.Filters;
 global using Serilog;
-using Graduation_Project.MiddleWare;
+global using Graduation_Project.MiddleWare;
+global using System.Reflection;
+global using Graduation_Project.Features.GuestMode.Command.Models;
+global using Graduation_Project.Features.GuestMode.Queries.Results;
+global using Graduation_Project.Features.GuestMode.Queries.Models;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,7 +83,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 
 builder.Services.AddServiceDependencies();
 builder.Services.AddHttpContextAccessor();
-
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddTransient<IUrlHelper>(x =>
 {
@@ -109,6 +114,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseStaticFiles();
 app.UseHttpsRedirection();
 app.UseAuthentication();

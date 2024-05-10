@@ -1,5 +1,7 @@
 ﻿using EntityFrameworkCore.EncryptColumn.Attribute;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Globalization;
+
 namespace Graduation_Project.Entities.Identity
 {
     public class User : IdentityUser<int>
@@ -15,6 +17,7 @@ namespace Graduation_Project.Entities.Identity
         public string? Government { get; set; }
         [EncryptColumn]
         public string? Code { get; set; }
+        public DateTime? BirthDate { get; set; }
         public string? AcadmicYear { get; set; }
         public string? College { get; set; }
         public string? FrontIdImage { get; set; }
@@ -23,8 +26,8 @@ namespace Graduation_Project.Entities.Identity
         public string? CollegeCardBackImage { get; set; }
         public string? PersonalImage { get; set; }
         public string? NationalId { get; set; }
-        public List<Tool>? Tool { get; set; }
-        public List<FavoriteTool>? FavoriteTool { get; set; }
+        public ICollection<Tool>? Tool { get; set; }
+        public ICollection<FavoriteTool>? FavoriteTool { get; set; }
 
         [InverseProperty(nameof(UserRefreshToken.user))]
         public virtual ICollection<UserRefreshToken>? UserRefreshTokens { get; set; }

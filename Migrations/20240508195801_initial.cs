@@ -37,6 +37,7 @@ namespace Graduation_Project.Migrations
                     Univserity = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Government = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Code = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BirthDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     AcadmicYear = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     College = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FrontIdImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -205,12 +206,17 @@ namespace Graduation_Project.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Department = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RentTime = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<int>(type: "int", nullable: false),
                     Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     College = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Acadmicyear = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     University = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ToolImages1 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ToolImages2 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ToolImages3 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ToolImages4 = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -229,7 +235,8 @@ namespace Graduation_Project.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    ToolId = table.Column<int>(type: "int", nullable: false)
+                    ToolId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -244,27 +251,8 @@ namespace Graduation_Project.Migrations
                         name: "FK_FavoriteTool_Tools_ToolId",
                         column: x => x.ToolId,
                         principalTable: "Tools",
-                        principalColumn: "ToolId");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Photos",
-                columns: table => new
-                {
-                    ToolPhotoId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ToolImages = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ToolId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Photos", x => x.ToolPhotoId);
-                    table.ForeignKey(
-                        name: "FK_Photos_Tools_ToolId",
-                        column: x => x.ToolId,
-                        principalTable: "Tools",
                         principalColumn: "ToolId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateIndex(
@@ -312,11 +300,6 @@ namespace Graduation_Project.Migrations
                 column: "ToolId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Photos_ToolId",
-                table: "Photos",
-                column: "ToolId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_UserId",
                 table: "RefreshTokens",
                 column: "UserId");
@@ -347,9 +330,6 @@ namespace Graduation_Project.Migrations
 
             migrationBuilder.DropTable(
                 name: "FavoriteTool");
-
-            migrationBuilder.DropTable(
-                name: "Photos");
 
             migrationBuilder.DropTable(
                 name: "RefreshTokens");

@@ -23,10 +23,11 @@ namespace Graduation_Project.Entities
         {
             optionsBuilder.UseSqlServer("Server=DESKTOP-A0LMSG6\\SD;Database=UNITOOL;Trusted_Connection=True;TrustServerCertificate=True;");
         }
-        public DbSet<User> Users { get; set; }
         public DbSet<UserRefreshToken> RefreshTokens { get; set; }
         public DbSet<Tool> Tools { get; set; }
         public DbSet<FavoriteTool> FavoriteTool { get; set; }
+        public DbSet<GuestModeUser> GuestModes { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -40,7 +41,7 @@ namespace Graduation_Project.Entities
                 .WithMany(u => u.Tool)
                 .HasForeignKey(t => t.UserId);
 
-            // Configure FavoriteTool entity
+            //Configure FavoriteTool entity
             modelBuilder.Entity<FavoriteTool>()
                 .HasKey(ft => new { ft.UserId, ft.ToolId });
 
@@ -53,11 +54,7 @@ namespace Graduation_Project.Entities
             modelBuilder.Entity<FavoriteTool>()
                 .HasOne(ft => ft.Tool)
                 .WithMany(t => t.FavoriteTool)
-                .HasForeignKey(ft => ft.ToolId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-
-
+                .HasForeignKey(ft => ft.ToolId);
 
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

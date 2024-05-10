@@ -25,6 +25,6 @@ namespace Graduation_Project.Entities
         [ForeignKey("User")]
         public int UserId { get; set; }
         public User User { get; set; }
-        public List<FavoriteTool> FavoriteTool { get; set; }
+        public ICollection<FavoriteTool> FavoriteTool { get; set; }
     }
 }

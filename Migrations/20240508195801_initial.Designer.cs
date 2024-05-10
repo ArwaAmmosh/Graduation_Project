@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Graduation_Project.Migrations
 {
     [DbContext(typeof(UNITOOLDbContext))]
-    [Migration("20240506193828_v1")]
-    partial class v1
+    [Migration("20240508195801_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,6 +31,9 @@ namespace Graduation_Project.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("ToolId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
                         .HasColumnType("int");
 
                     b.HasKey("UserId", "ToolId");
@@ -86,6 +89,9 @@ namespace Graduation_Project.Migrations
 
                     b.Property<string>("BackIdImage")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("BirthDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(max)");
@@ -236,6 +242,10 @@ namespace Graduation_Project.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("College")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Department")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -390,7 +400,7 @@ namespace Graduation_Project.Migrations
                     b.HasOne("Graduation_Project.Entities.Tool", "Tool")
                         .WithMany("FavoriteTool")
                         .HasForeignKey("ToolId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Graduation_Project.Entities.Identity.User", "User")

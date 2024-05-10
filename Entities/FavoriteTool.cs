@@ -3,10 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Graduation_Project.Entities
 {
-    [PrimaryKey("ToolId", "UserId")]
+   // [PrimaryKey("ToolId", "UserId")]
 
     public class FavoriteTool
     {
+        
+        public int Id { get; set; }
 
         [ForeignKey("User")]
         public int UserId { get; set; }

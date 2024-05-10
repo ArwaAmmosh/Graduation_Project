@@ -103,11 +103,7 @@ namespace Graduation_Project.Services.Implemention
             {
                 claims.Add(new Claim(nameof(UserClaimModel.Government), user.Government));
             }
-            if (user.PersonalImage != null)
-            {
-                claims.Add(new Claim(nameof(UserClaimModel.PersonalImage), user.PersonalImage));
-            }
-
+            
             foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));

@@ -22,10 +22,9 @@ namespace Graduation.Controllers
             return Ok(response);
         }
         [HttpGet("GetUserById")]
-        [Authorize(Roles = "SuperAdmin,Admin")]
-        public async Task<IActionResult> GetUserById([FromQuery] int id)
+        public async Task<IActionResult> GetUserById()
         {
-            var response = await Mediator.Send(new GetUserByIdQuery(id));
+            var response = await Mediator.Send(new GetUserByIdQuery());
             return Ok(response);
         }
         [HttpPut("UpdateUserInformation")]

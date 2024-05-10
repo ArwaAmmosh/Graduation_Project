@@ -1,12 +1,4 @@
 ﻿
-
-
-
-
-
-
-
-
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Graduation_Project.Infrastructure

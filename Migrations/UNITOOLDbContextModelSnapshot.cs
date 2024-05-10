@@ -30,6 +30,9 @@ namespace Graduation_Project.Migrations
                     b.Property<int>("ToolId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
                     b.HasKey("UserId", "ToolId");
 
                     b.HasIndex("ToolId");
@@ -83,6 +86,9 @@ namespace Graduation_Project.Migrations
 
                     b.Property<string>("BackIdImage")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("BirthDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(max)");
@@ -391,7 +397,7 @@ namespace Graduation_Project.Migrations
                     b.HasOne("Graduation_Project.Entities.Tool", "Tool")
                         .WithMany("FavoriteTool")
                         .HasForeignKey("ToolId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Graduation_Project.Entities.Identity.User", "User")
