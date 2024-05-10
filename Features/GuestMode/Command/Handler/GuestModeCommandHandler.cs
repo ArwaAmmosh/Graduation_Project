@@ -1,6 +1,7 @@
 ﻿using Graduation_Project.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data.Entity;
 
 namespace Graduation_Project.Features.GuestMode.Command.Handler
 {
@@ -12,16 +13,15 @@ namespace Graduation_Project.Features.GuestMode.Command.Handler
         #region Fields
         private readonly IMapper _mapper;
         private readonly IStringLocalizer<SharedResource> _sharedResource;
-        private readonly UserManager<GuestModeUser> _userManager;
-
+        private readonly UNITOOLDbContext _uNITOOLDbContext;
         #endregion
         #region Constructor
-        public GuestModeCommandHandler(IStringLocalizer<SharedResource> stringLocalizer, IMapper mapper, UserManager<GuestModeUser> userManager) : base(stringLocalizer)
+        public GuestModeCommandHandler(IStringLocalizer<SharedResource> stringLocalizer, IMapper mapper,UNITOOLDbContext uNITOOLDbContext) : base(stringLocalizer)
         {
 
             _sharedResource = stringLocalizer;
             _mapper = mapper;
-            _userManager = userManager;
+            _uNITOOLDbContext= uNITOOLDbContext;
         }
 
 
@@ -30,26 +30,25 @@ namespace Graduation_Project.Features.GuestMode.Command.Handler
         public async Task<Response<string>> Handle(AddNewGuestInfoCommand request, CancellationToken cancellationToken)
         {
             var guestUser = _mapper.Map<GuestModeUser>(request);
-            var result = _userManager.CreateAsync(guestUser);
+            var result = _uNITOOLDbContext.AddAsync(guestUser);
             if (!result.IsCompletedSuccessfully)
                 return BadRequest<string>(_sharedResource[SharedResourcesKeys.FaildToAddGuestInformation]);
+             _uNITOOLDbContext.SaveChanges();
             return Success<string>("");
 
 
         }
         public async Task<Response<string>> Handle(DeleteGuestInfoCommand request, CancellationToken cancellationToken)
         {
-            var guestUser = await _userManager.FindByIdAsync(request.Id.ToString());
+            var guestUser = await _uNITOOLDbContext.GuestModes.FindAsync(request.Id);
             if (guestUser == null)
             {
                 return NotFound<string>();
             }
-            var result = await _userManager.DeleteAsync(guestUser);
-            if (!result.Succeeded)
-            {
-                return BadRequest<string>(_sharedResource[SharedResourcesKeys.DeletedFailed]);
-            }
+            var result = _uNITOOLDbContext.GuestModes.Remove(guestUser);
+            await _uNITOOLDbContext.SaveChangesAsync();
             return Success<string>(_sharedResource[SharedResourcesKeys.Deleted]);
+
         }
         #endregion
     }
