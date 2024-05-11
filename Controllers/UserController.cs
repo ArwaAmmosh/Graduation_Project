@@ -28,7 +28,7 @@ namespace Graduation.Controllers
             return Ok(response);
         }
         [HttpPut("UpdateUserInformation")]
-        [Authorize(Roles = "ViewUser")]
+        [Authorize]
         public async Task<IActionResult> Update([FromForm] UpdateUserCommand command)
         {
             var response = await Mediator.Send(command);

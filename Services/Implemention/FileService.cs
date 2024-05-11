@@ -7,6 +7,7 @@ namespace Graduation_Project.Services.Implemention
     {
         #region Fields
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly string _host = "https://localhost:7257/";
 
         #endregion
         #region Constructor
@@ -33,7 +34,7 @@ namespace Graduation_Project.Services.Implemention
                     {
                         await file.CopyToAsync(fileStream);
                         await fileStream.FlushAsync();
-                        return $"{path}/{filename}";
+                        return $"{_host}{Location}/{filename}";
                     }
 
                 }
@@ -48,10 +49,13 @@ namespace Graduation_Project.Services.Implemention
             }
         }
 
-       
-      
+
     }
 
-    #endregion
+
+
 }
+
+    #endregion
+
 
