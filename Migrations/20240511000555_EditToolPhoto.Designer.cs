@@ -12,8 +12,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Graduation_Project.Migrations
 {
     [DbContext(typeof(UNITOOLDbContext))]
+<<<<<<<< HEAD:Migrations/20240511000555_EditToolPhoto.Designer.cs
     [Migration("20240511000555_EditToolPhoto")]
     partial class EditToolPhoto
+========
+    [Migration("20240510061211_addtoolphototable")]
+    partial class addtoolphototable
+>>>>>>>> 76371b324150f4639ae50bc6f83c3b1ca5211001:Migrations/20240510061211_addtoolphototable.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -294,6 +299,20 @@ namespace Graduation_Project.Migrations
 
                     b.Property<string>("RentTime")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ToolImages1")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ToolImages2")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ToolImages3")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ToolImages4")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("University")
