@@ -1,5 +1,8 @@
 ﻿using Graduation_Project.Entities.Identity;
 using Graduation_Project.Wrapper;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+
 
 namespace Graduation_Project.Controllers
 {
@@ -363,10 +366,10 @@ namespace Graduation_Project.Controllers
                 return BadRequest(new ApiResponse(400));
             }
         }
-        // GET: api/Tools
+
         [Authorize]
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Tool>>> GetToolsForUser()
+        [HttpGet("dependonuservalue")]
+        public async Task<ActionResult<PaginatedResult<GetToolDto>>> GetToolsForUser(int pageNumber = 1, int pageSize = 10)
         {
             // Retrieve the current user's ID from the token 
             var userId = _currentUserService.GetUserId();
@@ -395,12 +398,32 @@ namespace Graduation_Project.Controllers
             {
                 toolsQuery = toolsQuery.Where(t => t.AcademicYear == user.AcademicYear);
             }
-            // Execute the query to retrieve filtered tools
-            var tools = await toolsQuery.ToListAsync();
 
-            return Ok(tools);
+            // Paginate the filtered tools
+            var totalItems = await toolsQuery.CountAsync();
+            var paginatedTools = await toolsQuery
+                .Select(t => new GetToolDto
+                {
+                    ToolId = t.ToolId,
+                    Name = t.Name,
+                    Description = t.Description,
+                    RentTime = t.RentTime.ToString(), // Assuming RentTime is string in GetToolDto
+                    College = t.College,
+                    University = t.University,
+                    Price = t.Price,
+                    Department = t.Department,
+                    Photos = _context.ToolPhotos
+                        .Where(tp => tp.ToolId == t.ToolId)
+                        .Select(tp => tp.ToolImages)
+                        .ToList()
+                })
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var paginatedResult = PaginatedResult<GetToolDto>.Success(paginatedTools, totalItems, pageNumber, pageSize);
+            return Ok(paginatedResult);
         }
-
 
         private bool ToolExists(int id)
         {
