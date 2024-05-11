@@ -13,7 +13,7 @@
                     Email = "UNITOOLTeam@gmail.com",
                     FirstName = "UNITOOL",
                     LastName = "Team",
-                    Univserity = "Tanta",
+                    University = "Tanta",
                     Government = "El-Garbia",
                     PhoneNumber = "01025019961",
                     EmailConfirmed = true,

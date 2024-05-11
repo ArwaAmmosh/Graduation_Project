@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Graduation_Project.Dtos;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Graduation_Project.Controllers
 {
@@ -57,45 +58,51 @@ namespace Graduation_Project.Controllers
         // GET: api/FavoriteTools
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> GetFavoriteTool()
+        public async Task<IActionResult> GetFavoriteTools(int pageNumber = 1, int pageSize = 10)
         {
             // Retrieve the current user's ID
-            var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!int.TryParse(userIdString, out int userId))
-            {
-                // Handle the case where the user ID cannot be parsed as an integer
-                return BadRequest("Invalid user ID format.");
-            }
+            var userId = _currentUserService.GetUserId();
 
-            // Find the user's favorite tool
-            var favoriteTool = await _context.FavoriteTool
+            // Find the total count of favorite tools for the current user
+            var totalFavoriteToolsCount = await _context.FavoriteTool
+                .Where(ft => ft.User.Id == userId)
+                .CountAsync();
+
+            // Calculate the number of items to skip
+            var skipCount = (pageNumber - 1) * pageSize;
+
+            // Find paginated favorite tools for the current user
+            var favoriteToolsQuery = _context.FavoriteTool
                 .Include(ft => ft.Tool) // Include the Tool entity
-                .FirstOrDefaultAsync(ft => ft.User.Id == userId);
+                .Where(ft => ft.User.Id == userId)
+                .Select(ft => new FavoriteToolDto
+                {
+                    ToolId = ft.ToolId,
+                    Name = ft.Tool.Name,
+                    Description = ft.Tool.Description,
+                    RentTime = ft.Tool.RentTime,
+                    College = ft.Tool.College,
+                    University = ft.Tool.University,
+                    Price = ft.Tool.Price,
+                    Department = ft.Tool.Department,
+                    Photos = _context.ToolPhotos
+                        .Where(tp => tp.ToolId == ft.Tool.ToolId)
+                        .Select(tp => tp.ToolImages)
+                        .ToList()
+                })
+                .Skip(skipCount)
+                .Take(pageSize);
 
-            if (favoriteTool == null)
+            var paginatedFavoriteTools = await favoriteToolsQuery.ToListAsync();
+
+            if (paginatedFavoriteTools == null || paginatedFavoriteTools.Count == 0)
             {
-                return NotFound("Favorite tool not found.");
+                return NotFound("Favorite tools not found.");
             }
 
-            // Return the favorite tool DTO
-            var favoriteToolDto = new FavoriteToolDto
-            {
-
-                Name = favoriteTool.Tool.Name,
-                Description = favoriteTool.Tool.Description,
-
-                RentTime = favoriteTool.Tool.RentTime,
-
-                College = favoriteTool.Tool.College,
-
-                University = favoriteTool.Tool.University,
-
-                Price = favoriteTool.Tool.Price
-
-            };
-
-            return Ok(favoriteToolDto);
+            return Ok(new { TotalCount = totalFavoriteToolsCount, FavoriteTools = paginatedFavoriteTools });
         }
+
 
         // DELETE: api/FavoriteTools/{toolId}
         [Authorize]
@@ -103,16 +110,10 @@ namespace Graduation_Project.Controllers
         public async Task<IActionResult> RemoveFromFavorites(int toolId)
         {
             // Retrieve the current user's ID
-            var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!int.TryParse(userIdString, out int userId))
-            {
-                // Handle the case where the user ID cannot be parsed as an integer
-                return BadRequest("Invalid user ID format.");
-            }
-
+            var userId = _currentUserService.GetUserId();
             // Find the favorite tool entry for the user and tool
             var favoriteTool = await _context.FavoriteTool
-                .FirstOrDefaultAsync(ft => ft.User.Id == userId && ft.Tool.ToolId == toolId);
+                .FirstOrDefaultAsync(ft => ft.UserId == userId && ft.ToolId == toolId);
             if (favoriteTool == null)
             {
                 return NotFound("Favorite tool not found.");
@@ -124,5 +125,6 @@ namespace Graduation_Project.Controllers
 
             return NoContent();
         }
+
     }
 }

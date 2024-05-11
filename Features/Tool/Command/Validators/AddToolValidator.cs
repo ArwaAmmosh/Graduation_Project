@@ -1,7 +1,7 @@
 ﻿
 namespace Graduation_Project.Features.Tool.Command.Validators
 {
-    public class AddToolValidatitor: AbstractValidator<ToolPostDto>
+    public class AddToolValidatitor: AbstractValidator<PostToolDto>
     {
 
         #region Fields
@@ -24,9 +24,7 @@ namespace Graduation_Project.Features.Tool.Command.Validators
             RuleFor(x => x.Acadmicyear)
                 .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
                 .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);
-            RuleFor(x => x.ToolImages1)
-                .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
-                .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);
+    
             RuleFor(x => x.Category)
                .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
                .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);
@@ -36,15 +34,7 @@ namespace Graduation_Project.Features.Tool.Command.Validators
             RuleFor(x => x.RentTime)
                 .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
                 .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);
-            RuleFor(x => x.ToolImages2)
-               .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
-               .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]); 
-            RuleFor(x => x.ToolImages3)
-                .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
-                .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);
-            RuleFor(x => x.ToolImages4)
-                .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
-                .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);
+           
             RuleFor(x => x.Department)
             .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
             .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);

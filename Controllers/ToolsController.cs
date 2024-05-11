@@ -10,107 +10,169 @@ namespace Graduation_Project.Controllers
         private readonly UNITOOLDbContext _context;
         private readonly CurrentUserService _currentUserService;
         private readonly IToolServices toolServices;
-        public ToolsController(UNITOOLDbContext context, CurrentUserService currentUserService, IToolServices _toolServices)
+        private readonly IWebHostEnvironment _env;
+
+        
+       
+        public ToolsController(UNITOOLDbContext context, CurrentUserService currentUserService, IToolServices _toolServices, IWebHostEnvironment env)
         {
             _context = context;
-            _currentUserService = currentUserService; // Initialize _currentUserService
+            _currentUserService = currentUserService; 
             toolServices = _toolServices;
+            _env = env;
 
         }
+        // GET: api/Tools/{id}
+        [HttpGet("{id}", Name = "GetTool")]
+        public async Task<ActionResult<GetToolDto>> GetTool(int id)
+        {
+            var tool = await _context.Tools.FindAsync(id);
+            if (tool == null)
+            {
+                return NotFound();
+            }
+            var getToolDto = new GetToolDto
+            {
+                ToolId = tool.ToolId,
+                Name = tool.Name,
+                Description = tool.Description,
+                RentTime = tool.RentTime,
+                Price = tool.Price,
+                College = tool.College,
+                University = tool.University,
+                Department = tool.Department,
+                Photos = _context.ToolPhotos
+           .Where(tp => tp.ToolId == tool.ToolId)
+           .Select(tp => tp.ToolImages)
+           .ToList()
+            };
 
-        //All Tool 
-        [HttpGet("Pagination")]
-        public async Task<ActionResult<PaginatedResult<ToolDto>>> GetTools(int pageNumber = 1, int pageSize = 10)
+            return getToolDto;
+
+
+        }
+        //All Tool
+        [HttpGet("AllToolWithoutAuthorized")]
+        public async Task<ActionResult<PaginatedResult<GetToolDto>>> GetTools(int pageNumber = 1, int pageSize = 10)
         {
             var toolsQuery = _context.Tools
-                .Select(t => new ToolDto
+                .Select(t => new GetToolDto
                 {
+                    ToolId = t.ToolId,
                     Name = t.Name,
                     Description = t.Description,
                     RentTime = t.RentTime,
                     Price = t.Price,
                     College = t.College,
                     University = t.University,
-                    ToolImages1 = t.ToolImages1,
-                    ToolImages2 = t.ToolImages2,
-                    ToolImages3 = t.ToolImages3,
-                    ToolImages4 = t.ToolImages4,
-                    Department = t.Department
+                    Photos = _context.ToolPhotos
+                        .Where(tp => tp.ToolId == t.ToolId)
+                        .Select(tp => tp.ToolImages)
+                        .ToList()
                 })
                 .ToList(); // Materialize the query into a list
 
-            var paginatedTools = PaginatedResult<ToolDto>.Success(toolsQuery, toolsQuery.Count(), pageNumber, pageSize);
+            var paginatedTools = PaginatedResult<GetToolDto>.Success(toolsQuery, toolsQuery.Count(), pageNumber, pageSize);
 
             return Ok(paginatedTools);
-
-
         }
 
+        //GET tool user ADD
+        [Authorize]
+        [HttpGet("GetUserTools")]
+        public async Task<ActionResult<PaginatedResult<GetToolDto>>> GetMyTools(int pageNumber = 1, int pageSize = 10)
+        {
+            var userId = _currentUserService.GetUserId();
+
+            // Retrieve tools associated with the current user
+            var toolsQuery = _context.Tools
+                .Where(t => t.UserId == userId)
+                .Select(t => new GetToolDto
+                {
+                    ToolId = t.ToolId,
+                    Name = t.Name,
+                    Description = t.Description,
+                    RentTime = t.RentTime,
+                    Price = t.Price,
+                    College = t.College,
+                    University = t.University,
+                    Photos = _context.ToolPhotos
+                        .Where(tp => tp.ToolId == t.ToolId)
+                        .Select(tp => tp.ToolImages)
+                        .ToList()
+                })
+                .ToList();
+
+            // Count the total number of tools associated with the current user
+            var userToolsCount = await _context.Tools
+                .Where(t => t.UserId == userId)
+                .CountAsync();
+
+            var paginatedTools = PaginatedResult<GetToolDto>.Success(toolsQuery, userToolsCount, pageNumber, pageSize);
+
+            return Ok(paginatedTools);
+        }
 
 
         // GET: api/Tool/category/{category}
-        [HttpGet("category/{category}")]
-        public async Task<ActionResult<PaginatedResult<ToolDto>>> GetToolsByCategory(string category, int pageNumber = 1, int pageSize = 10)
+        [HttpGet("ToolByCategory")]
+        public async Task<ActionResult<PaginatedResult<GetToolDto>>> GetToolsByCategory(string category, int pageNumber = 1, int pageSize = 10)
         {
             var toolsQuery = _context.Tools
                 .Where(tool => tool.Category == category)
-                .Select(t => new ToolDto
+                .Select(t => new GetToolDto
                 {
+                    ToolId = t.ToolId,
                     Name = t.Name,
                     Description = t.Description,
                     RentTime = t.RentTime,
                     Price = t.Price,
                     College = t.College,
                     University = t.University,
-                    ToolImages1 = t.ToolImages1,
-                    ToolImages2 = t.ToolImages2,
-                    ToolImages3 = t.ToolImages3,
-                    ToolImages4 = t.ToolImages4,
-                    Department = t.Department
+                    Photos = _context.ToolPhotos
+                        .Where(tp => tp.ToolId == t.ToolId)
+                        .Select(tp => tp.ToolImages)
+                        .ToList()
 
                 })
                 .ToList(); // Materialize the query into a list
 
-            var paginatedTools = PaginatedResult<ToolDto>.Success(toolsQuery, toolsQuery.Count(), pageNumber, pageSize);
+            var paginatedTools = PaginatedResult<GetToolDto>.Success(toolsQuery, toolsQuery.Count(), pageNumber, pageSize);
 
             return Ok(paginatedTools);
         }
 
         // GET: api/Tool/University/{University}
-        [HttpGet("University/{University}")]
-        public async Task<ActionResult<IEnumerable<ToolDto>>> GetToolsByUnivserity(string University)
+        [HttpGet("ToolByUniversity")]
+        public async Task<ActionResult<PaginatedResult<GetToolDto>>> GetToolsByUnivserity(string University, int pageNumber = 1, int pageSize = 10)
         {
-            var tools = await _context.Tools
+            var toolsQuery =  _context.Tools
                 .Where(tool => tool.University == University)
-                .Select(t => new ToolDto
+                .Select(t => new GetToolDto
                 {
+
+                    ToolId = t.ToolId,
                     Name = t.Name,
                     Description = t.Description,
                     RentTime = t.RentTime,
                     Price = t.Price,
                     College = t.College,
                     University = t.University,
-                    ToolImages1 = t.ToolImages1,
-                    ToolImages2 = t.ToolImages2,
-                    ToolImages3 = t.ToolImages3,
-                    ToolImages4 = t.ToolImages4,
-                    Department = t.Department
-
+                    Photos = _context.ToolPhotos
+                        .Where(tp => tp.ToolId == t.ToolId)
+                        .Select(tp => tp.ToolImages)
+                        .ToList()
 
                 })
-                .ToListAsync();
+                .ToList();
+            var paginatedTools = PaginatedResult<GetToolDto>.Success(toolsQuery, toolsQuery.Count(), pageNumber, pageSize);
 
-            if (tools == null || !tools.Any())
-            {
-                return NotFound();
-            }
-
-            return tools;
+            return Ok(paginatedTools);
         }
 
         // Search  // GET: api/Tool/search?name={Name}
         [HttpGet("searchByName")]
-        public async Task<ActionResult<PaginatedResult<ToolDto>>> SearchToolsByName(string name, int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<PaginatedResult<GetToolDto>>> SearchToolsByName(string name, int pageNumber = 1, int pageSize = 10)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -119,77 +181,92 @@ namespace Graduation_Project.Controllers
 
             var toolsQuery = _context.Tools
                 .Where(tool => tool.Name.Contains(name))
-                .Select(t => new ToolDto
+                .Select(t => new GetToolDto
                 {
+
+                    ToolId = t.ToolId,
                     Name = t.Name,
                     Description = t.Description,
                     RentTime = t.RentTime,
                     Price = t.Price,
                     College = t.College,
                     University = t.University,
-                    ToolImages1 = t.ToolImages1,
-                    ToolImages2 = t.ToolImages2,
-                    ToolImages3 = t.ToolImages3,
-                    ToolImages4 = t.ToolImages4,
-                    Department = t.Department
-
+                    Photos = _context.ToolPhotos
+                        .Where(tp => tp.ToolId == t.ToolId)
+                        .Select(tp => tp.ToolImages)
+                        .ToList()
                 })
                 .ToList(); // Materialize the query into a list
 
-            var paginatedTools = PaginatedResult<ToolDto>.Success(toolsQuery, toolsQuery.Count(), pageNumber, pageSize);
+            var paginatedTools = PaginatedResult<GetToolDto>.Success(toolsQuery, toolsQuery.Count(), pageNumber, pageSize);
 
             return Ok(paginatedTools);
         }
 
-        //Update //// PUT: api/Tool/{id}
         [HttpPut("UpdateTool/{id}")]
-        public async Task<IActionResult> UpdateTool(int id, UpdateToolDto updateToolDto)
+        public async Task<IActionResult> UpdateTool(int id, [FromForm] UpdateToolDto updateToolDto)
         {
-            if (id != updateToolDto.ToolId)
-            {
-                return BadRequest("Invalid tool ID.");
-            }
-
+            // Retrieve the existing tool from the database
             var existingTool = await _context.Tools.FindAsync(id);
             if (existingTool == null)
             {
                 return NotFound("Tool not found.");
             }
 
+            // Update properties from DTO
             existingTool.Name = updateToolDto.Name;
             existingTool.Description = updateToolDto.Description;
             existingTool.RentTime = updateToolDto.RentTime;
-            existingTool.Category = updateToolDto.Category;
             existingTool.Price = updateToolDto.Price;
-            existingTool.College = updateToolDto.College;
             existingTool.University = updateToolDto.University;
-            existingTool.Acadmicyear = updateToolDto.Acadmicyear;
-            existingTool.ToolImages1 = updateToolDto.ToolImages1;
-            existingTool.ToolImages2 = updateToolDto.ToolImages2;
-            existingTool.ToolImages3 = updateToolDto.ToolImages3;
-            existingTool.ToolImages4 = updateToolDto.ToolImages4;
+            existingTool.Department = updateToolDto.Department;
+            existingTool.Category = updateToolDto.Category;
+            existingTool.AcademicYear = updateToolDto.Acadmicyear;
 
-            try
+            // Handle photo updates
+            if (updateToolDto.Photos != null && updateToolDto.Photos.Any())
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ToolExists(id))
+                // Delete existing photos if needed (optional)
+                var existingPhotos = _context.ToolPhotos.Where(tp => tp.ToolId == id);
+                _context.ToolPhotos.RemoveRange(existingPhotos);
+
+                // Save new photos
+                foreach (var photoFile in updateToolDto.Photos)
                 {
-                    return NotFound("Tool not found.");
-                }
-                else
-                {
-                    throw;
+                    if (photoFile != null && photoFile.Length > 0)
+                    {
+                        // Process each photo file
+                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(photoFile.FileName);
+                        var filePath = Path.Combine(_env.WebRootPath, "ToolImages", fileName);
+
+                        // Save the photo to the uploads directory in wwwroot
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await photoFile.CopyToAsync(stream);
+                        }
+
+                        // Create ToolPhoto entity
+                        var toolPhoto = new ToolPhoto
+                        {
+                            ToolId = id,
+                            ToolImages = "/ToolImages/" + fileName // Save relative path to access the photo from the web
+                        };
+
+                        // Add tool photo to the database
+                        _context.ToolPhotos.Add(toolPhoto);
+                    }
                 }
             }
+
+            // Save changes to the database
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
+
         // DELETE: api/Tools/{id}
-        
+
         [HttpDelete("DeleteTool/{id}")]
         public async Task<IActionResult> DeleteTool(int id)
         {
@@ -219,41 +296,15 @@ namespace Graduation_Project.Controllers
                 return StatusCode(500, "An error occurred while deleting the tool.");
             }
         }
-        //GET tool user ADD
-        [Authorize]
-        [HttpGet("GetUserTools")]
-        public async Task<ActionResult<IEnumerable<Tool>>> GetMyTools()
-        {
-            var userId = _currentUserService.GetUserId();
+      
 
-            // Retrieve tools associated with the current user
-            var userTools = await _context.Tools.Where(t => t.UserId == userId).ToListAsync();
-
-            return Ok(userTools);
-        }
-        // GET: api/Tools/{id}
-        [HttpGet("{id}", Name = "GetTool")]
-        public async Task<ActionResult<Tool>> GetTool(int id)
-        {
-            var tool = await _context.Tools.FindAsync(id);
-            if (tool == null)
-            {
-                return NotFound();
-            }
-
-            return tool;
-        }
+       
         // POST: api/Tools
         [HttpPost("AddnewTool")]
         [Authorize]
-        public async Task<ActionResult<Tool>> PostTool([FromForm] ToolPostDto toolPostDto)
+        public async Task<ActionResult<Tool>> PostTool([FromForm] PostToolDto toolPostDto)
         {
-            var image1 = await toolServices.Upload1Image(toolPostDto.ToolImages1);
-            var image2 = await toolServices.Upload2Image(toolPostDto.ToolImages2);
-            var image3 = await toolServices.Upload3Image(toolPostDto.ToolImages3);
-            var image4 = await toolServices.Upload4Image(toolPostDto.ToolImages4);
-
-            var userId =_currentUserService.GetUserId();
+            var userId = _currentUserService.GetUserId();
             var user = await _currentUserService.GetUserAsync();
             if (user != null)
             {
@@ -267,20 +318,45 @@ namespace Graduation_Project.Controllers
                     University = toolPostDto.University,
                     Category = toolPostDto.Category,
                     Price = toolPostDto.Price,
-                    Acadmicyear = toolPostDto.Acadmicyear,
+                    AcademicYear = toolPostDto.Acadmicyear,
                     Department = toolPostDto.Department,
-                    ToolImages1 = image1,
-                    ToolImages2 = image2,
-                    ToolImages4 = image4,
-                    ToolImages3 = image3,
-                    UserId=userId
-                   
-
-
-
+                    UserId = userId
                 };
+
+                // Add tool to the database
                 _context.Tools.Add(tool);
                 await _context.SaveChangesAsync();
+
+                // Save tool photos if provided
+                if (toolPostDto.Photos != null && toolPostDto.Photos.Any())
+                {
+                    foreach (var photo in toolPostDto.Photos)
+                    {
+                        if (photo != null && photo.Length > 0)
+                        {
+                            // Create a unique file name to prevent conflicts
+                            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(photo.FileName);
+                            var filePath = Path.Combine(_env.WebRootPath, "ToolImages", fileName);
+
+                            // Save the photo to the uploads directory in wwwroot
+                            using (var stream = new FileStream(filePath, FileMode.Create))
+                            {
+                                await photo.CopyToAsync(stream);
+                            }
+
+                            // Create ToolPhoto entity
+                            var toolPhoto = new ToolPhoto
+                            {
+                                ToolId = tool.ToolId, // Assuming ToolId is generated by the database
+                                ToolImages = "/ToolImages/" + fileName // Save relative path to access the photo from the web
+                            };
+
+                            // Add tool photo to the database
+                            _context.ToolPhotos.Add(toolPhoto);
+                        }
+                    }
+                    await _context.SaveChangesAsync();
+                }
 
                 return Ok(new ApiResponse(200));
             }
@@ -289,6 +365,44 @@ namespace Graduation_Project.Controllers
                 return BadRequest(new ApiResponse(400));
             }
         }
+        // GET: api/Tools
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Tool>>> GetToolsForUser()
+        {
+            // Retrieve the current user's ID from the token 
+            var userId = _currentUserService.GetUserId();
+            // Retrieve user based on userId
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+            {
+                return BadRequest("User not found.");
+            }
+
+            // Filter tools based on user attributes
+            var toolsQuery = _context.Tools.AsQueryable();
+            if (!string.IsNullOrEmpty(user.University))
+            {
+                toolsQuery = toolsQuery.Where(t => t.University == user.University);
+            }
+            if (!string.IsNullOrEmpty(user.College))
+            {
+                toolsQuery = toolsQuery.Where(t => t.College == user.College);
+            }
+            if (!string.IsNullOrEmpty(user.Department))
+            {
+                toolsQuery = toolsQuery.Where(t => t.Department == user.Department);
+            }
+            if (!string.IsNullOrEmpty(user.AcademicYear))
+            {
+                toolsQuery = toolsQuery.Where(t => t.AcademicYear == user.AcademicYear);
+            }
+            // Execute the query to retrieve filtered tools
+            var tools = await toolsQuery.ToListAsync();
+
+            return Ok(tools);
+        }
+
 
         private bool ToolExists(int id)
         {

@@ -13,12 +13,13 @@ namespace Graduation_Project.Entities.Identity
 
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Univserity { get; set; }
+        public string University{ get; set; }
         public string? Government { get; set; }
         public string? Code { get; set; }
         public DateTime? BirthDate { get; set; }
-        public string? AcadmicYear { get; set; }
+        public string? AcademicYear { get; set; }
         public string? College { get; set; }
+        public string? Department { get; set; }
         public string? FrontIdImage { get; set; }
         public string? BackIdImage { get; set; }
         public string? CollegeCardFrontImage { get; set; }

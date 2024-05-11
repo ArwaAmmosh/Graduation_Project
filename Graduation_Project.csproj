@@ -60,7 +60,6 @@
   <ItemGroup>
     <Folder Include="Features\Users\Queries\Models\" />
     <Folder Include="Mapping\Users\Queries\" />
-    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>
