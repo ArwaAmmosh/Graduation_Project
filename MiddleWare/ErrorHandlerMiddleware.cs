@@ -23,7 +23,7 @@ namespace Graduation_Project.MiddleWare
                 var response = context.Response;
                 response.ContentType = "application/json";
                 var responseModel = new Response<string>() { Succeeded = false, Message = error?.Message };
-              Log.Error(error, error.Message, context.Request, "");
+              //Log.Error(error, error.Message, context.Request, "");
 
                 //TODO:: cover all validation errors
                 switch (error)

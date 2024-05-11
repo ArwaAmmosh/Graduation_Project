@@ -93,9 +93,9 @@ builder.Services.AddTransient<IUrlHelper>(x =>
 });
 builder.Services.AddTransient<AuthFilter>();
 builder.Services.AddTransient<ToolManager>();
-Log.Logger = new LoggerConfiguration()
-              .ReadFrom.Configuration(builder.Configuration).CreateLogger();
-builder.Services.AddSerilog();
+//Log.Logger = new LoggerConfiguration()
+              //.ReadFrom.Configuration(builder.Configuration).CreateLogger();
+//builder.Services.AddSerilog();
 var app = builder.Build();
 app.UseMiddleware<ErrorHandlerMiddleware>();
 using (var scope = app.Services.CreateScope())
