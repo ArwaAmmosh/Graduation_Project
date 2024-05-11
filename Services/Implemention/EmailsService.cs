@@ -42,7 +42,7 @@ namespace Graduation_Project.Services.Implemention
                 //end of sending email
                 return "Success";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return "Failed";
             }

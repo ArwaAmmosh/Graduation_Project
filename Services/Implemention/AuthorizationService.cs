@@ -41,7 +41,7 @@ namespace Graduation_Project.Services.Implemention
             //Chech if user has this role or not
             var users = await _userManager.GetUsersInRoleAsync(role.Name);
             //return exception 
-            if (users != null && users.Count() > 0) return "Used";
+            if (users != null && users.Count > 0) return "Used";
             //delete
             var result = await _roleManager.DeleteAsync(role);
             //success
@@ -132,7 +132,7 @@ namespace Graduation_Project.Services.Implemention
                 {
                     return "FailedToAddNewRoles";
                 }
-                transact.CommitAsync();
+               await transact.CommitAsync();
                 return "Success";
             }
             catch (Exception ex)
@@ -194,7 +194,7 @@ namespace Graduation_Project.Services.Implemention
                 await transact.CommitAsync();;
                 return "Success";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await transact.RollbackAsync();
                 return "FailedToUpdateUserClaims";

@@ -45,10 +45,8 @@ namespace Graduation_Project.Services.Implemention
             {
                 case "No Image Uploaded":
                     return "No Image Uploaded";
-                    break;
                 case "Failed To Upload":
                     return "Failed To Upload";
-                    break;
 
             }
             return imageUrl;
@@ -61,11 +59,8 @@ namespace Graduation_Project.Services.Implemention
             {
                 case "No Image Uploaded":
                     return "No Image Uploaded";
-                    break;
                 case "Failed To Upload":
                     return "Failed To Upload";
-                    break;
-
             }
             return imageUrl;
         }
@@ -88,6 +83,11 @@ namespace Graduation_Project.Services.Implemention
                 //username is Exist
                 if (userByUserName != null) return "UserNameIsExist";
                 //Create
+                var chars = "0123456789";
+                var random = new Random();
+                var randomNumber = new string(Enumerable.Repeat(chars, 6).Select(s => s[random.Next(s.Length)]).ToArray());
+                //update User In Database Code
+                user.Code = randomNumber;
                 var createResult = await _userManager.CreateAsync(user, Password);
                 //Failed
                 if (!createResult.Succeeded)
@@ -95,7 +95,7 @@ namespace Graduation_Project.Services.Implemention
 
                 await _userManager.AddToRoleAsync(user, "ViewUser");
                 //Send Confirm Email
-                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+               // var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                // var resquestAccessor = _httpContextAccessor.HttpContext.Request;
                // var returnUrl = resquestAccessor.Scheme + "://" + resquestAccessor.Host + _urlHelper.Action("ConfirmEmail", "Authentication", new { userId = user.Id, code = code });
                // var message = $"To Confirm Email Click Link: <a href='{returnUrl}'>Link Of Confirmation</a>";
@@ -113,11 +113,11 @@ namespace Graduation_Project.Services.Implemention
                                                <div style=""background-color: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);"">
                                                    <h2 style=""color: #007bff;"">Welcome to UNITOOL! 🎉</h2>
                                                    <p>Thank you for joining UNITOOL, your Exchanging Tools Platform. We're thrilled to welcome you to our platform!</p>
-                                                   <p style=""background-color: #007bff; color: #fff; padding: 5px; border-radius: 5px;"">Your verification code is: <stron>{code}</strong></p>
+                                                   <p style=""background-color: #007bff; color: #fff; padding: 5px; border-radius: 5px;"">Your verification code is:<br> <stron>{user.Code}</strong></p>
                                                    <p>This simple step ensures the security of your account and unlocks a world of convenience for managing your medications.</p>
                                                    <p>If you haven't signed up for UNITOOL, please disregard this email.</p>
                                                    <p>Get ready to trade and exchange Tools!</p>
-                                                   <p>Best regards,<br>UNITOOL Team</p>
+                                                   <p>Best regards,<br>UNITOOL Team😃</p>
                                                </div>
                                                <div style=""margin-top: 20px; font-size: 12px; color: #888;"">
                                                    <p>This is an automated message. Please do not reply to this email.</p>
@@ -135,7 +135,7 @@ namespace Graduation_Project.Services.Implemention
                     await trans.CommitAsync();
                     return "Success";
                 }
-                catch (Exception ex)
+                catch (Exception)
             {
                 await trans.RollbackAsync();
                 return "Failed";

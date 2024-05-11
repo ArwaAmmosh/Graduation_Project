@@ -5,7 +5,7 @@ namespace Graduation_Project.Filters
     public class AuthFilter : IAsyncActionFilter
     {
         private readonly ICurrentUserService _currentUserService;
-        private readonly UserManager<User> _userManager;
+        //private readonly UserManager<User> _userManager;
         public AuthFilter(ICurrentUserService currentUserService)
         {
             _currentUserService = currentUserService;

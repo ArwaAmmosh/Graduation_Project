@@ -9,6 +9,7 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Identity;
 using EntityFrameworkCore.EncryptColumn.Interfaces;
 using EntityFrameworkCore.EncryptColumn.Util;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace Graduation_Project.Services.Implemention
 {
@@ -20,7 +21,7 @@ namespace Graduation_Project.Services.Implemention
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly UNITOOLDbContext _unitoolDbContext;
         private readonly IEmailsService _emailService;
-        private readonly IEncryptionProvider _encryptionProvider;
+       // private readonly IEncryptionProvider _encryptionProvider;
 
         #endregion 
 
@@ -36,7 +37,7 @@ namespace Graduation_Project.Services.Implemention
             _refreshTokenRepository = refreshTokenRepository;
             _unitoolDbContext = unitoolDbContext;
             _emailService = emailService;
-            _encryptionProvider = new GenerateEncryptionProvider("8a4dcaaec64d412380fe4b02193cd26f");
+            //_encryptionProvider = new GenerateEncryptionProvider("8a4dcaaec64d412380fe4b02193cd26f");
 
         }
 
@@ -69,7 +70,7 @@ namespace Graduation_Project.Services.Implemention
             };
         }
 
-        private string GenerateRefreshToken()
+        private static string GenerateRefreshToken()
         {
             var randomNumber = new byte[32];
             var randomNumberGenerate = RandomNumberGenerator.Create();
@@ -227,10 +228,13 @@ namespace Graduation_Project.Services.Implemention
             if (userId == null || code == null)
                 return "ErrorWhenConfirmEmail";
             var user = await _userManager.FindByIdAsync(userId.ToString());
-            var confirmEmail = await _userManager.ConfirmEmailAsync(user, code);
-            if (!confirmEmail.Succeeded)
-                return "ErrorWhenConfirmEmail";
-            return "Success";
+            // var confirmEmail = await _userManager.ConfirmEmailAsync(user, code);
+            var userCode = user.Code;
+            //Equal With Code
+            if (userCode == code)
+                  return "Success";
+            return "ErrorWhenConfirmEmail";
+
         }
 
         public async Task<string> SendResetPasswordCode(string Email)
@@ -259,7 +263,7 @@ namespace Graduation_Project.Services.Implemention
                 await trans.CommitAsync();
                 return "Success";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await trans.RollbackAsync();
                 return "Failed";
@@ -298,7 +302,7 @@ namespace Graduation_Project.Services.Implemention
                 await trans.CommitAsync();
                 return "Success";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await trans.RollbackAsync();
                 return "Failed";
