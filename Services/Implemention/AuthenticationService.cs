@@ -85,15 +85,15 @@ namespace Graduation_Project.Services.Implemention
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(nameof(UserClaimModel.UserName), user.UserName),
                 new Claim(nameof(UserClaimModel.Email), user.Email),
-                new Claim(nameof(UserClaimModel.Univserity), user.Univserity),
+                new Claim(nameof(UserClaimModel.Univserity), user.University),
                 new Claim(nameof(UserClaimModel.FirstName), user.FirstName),
                 new Claim(nameof(UserClaimModel.LastName), user.LastName),
    };
             var roles = await _userManager.GetRolesAsync(user);
             var userClaims = await _userManager.GetClaimsAsync(user);
-            if (user.AcadmicYear != null)
+            if (user.AcademicYear != null)
             {
-                claims.Add(new Claim(nameof(UserClaimModel.AcadmicYear), user.AcadmicYear));
+                claims.Add(new Claim(nameof(UserClaimModel.AcadmicYear), user.AcademicYear));
             }
             if (user.College != null)
             {

@@ -11,10 +11,8 @@
         public string College { get; set; }
         public string Acadmicyear { get; set; }
         public string University { get; set; }
-        public string ToolImages1 { get; set; }
-        public string ToolImages2 { get; set; }
-        public string ToolImages3 { get; set; }
-        public string ToolImages4 { get; set; }
+        public string Department { get; set; }
+        public List<IFormFile> Photos { get; set; }
 
 
 

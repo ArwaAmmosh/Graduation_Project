@@ -4,7 +4,7 @@
     {
         public void AddToolMapping()
         {
-            CreateMap<ToolPostDto, Tool>();
+            CreateMap<PostToolDto, Tool>();
 
         }
     }
