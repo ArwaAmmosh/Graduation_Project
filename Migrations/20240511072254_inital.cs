@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Graduation_Project.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class inital : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,12 +34,13 @@ namespace Graduation_Project.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Univserity = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    University = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Government = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Code = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BirthDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    AcadmicYear = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AcademicYear = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     College = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Department = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FrontIdImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BackIdImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CollegeCardFrontImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -64,6 +65,23 @@ namespace Graduation_Project.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GuestModes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    HowCanWeHelpYouMassage = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GuestModes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -211,12 +229,8 @@ namespace Graduation_Project.Migrations
                     Price = table.Column<int>(type: "int", nullable: false),
                     Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     College = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Acadmicyear = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AcademicYear = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     University = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ToolImages1 = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ToolImages2 = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ToolImages3 = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ToolImages4 = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -253,6 +267,26 @@ namespace Graduation_Project.Migrations
                         principalTable: "Tools",
                         principalColumn: "ToolId",
                         onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ToolPhotos",
+                columns: table => new
+                {
+                    ToolPhotoId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ToolImages = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ToolId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ToolPhotos", x => x.ToolPhotoId);
+                    table.ForeignKey(
+                        name: "FK_ToolPhotos_Tools_ToolId",
+                        column: x => x.ToolId,
+                        principalTable: "Tools",
+                        principalColumn: "ToolId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -305,6 +339,11 @@ namespace Graduation_Project.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ToolPhotos_ToolId",
+                table: "ToolPhotos",
+                column: "ToolId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tools_UserId",
                 table: "Tools",
                 column: "UserId");
@@ -332,7 +371,13 @@ namespace Graduation_Project.Migrations
                 name: "FavoriteTool");
 
             migrationBuilder.DropTable(
+                name: "GuestModes");
+
+            migrationBuilder.DropTable(
                 name: "RefreshTokens");
+
+            migrationBuilder.DropTable(
+                name: "ToolPhotos");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

@@ -17,21 +17,17 @@ namespace Graduation_Project.Features.Users.commands.Handlers
         private readonly IStringLocalizer<SharedResource> _sharedResource;
         private readonly UserManager<User> _userManager;
         private readonly IUserService _userService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IEmailsService _emailsService;
         private readonly ICurrentUserService _currentUserService;
         private readonly IAuthenticationService _authenticationService;
         
         #endregion
         #region Constructor
-        public UserCommandHandler(IStringLocalizer<SharedResource> stringLocalizer, IMapper mapper, UserManager<User> userManager,IHttpContextAccessor httpContextAccessor, IEmailsService emailsService,IUserService userService,ICurrentUserService currentUserService, IAuthenticationService authenticationService) : base(stringLocalizer)
+        public UserCommandHandler(IStringLocalizer<SharedResource> stringLocalizer, IMapper mapper, UserManager<User> userManager,IUserService userService,ICurrentUserService currentUserService, IAuthenticationService authenticationService) : base(stringLocalizer)
         {
 
             _sharedResource = stringLocalizer;
             _mapper = mapper;
             _userManager = userManager;
-            _httpContextAccessor = httpContextAccessor;
-            _emailsService = emailsService;
             _userService = userService;
             _currentUserService = currentUserService;
             _authenticationService = authenticationService;
@@ -77,10 +73,10 @@ namespace Graduation_Project.Features.Users.commands.Handlers
             {
                 return BadRequest<string>(_sharedResource[SharedResourcesKeys.UserNameIsExist]);
             }
-            newUser.FrontIdImage = await _userService.UploadFrontIdImage(request.FrontIdImage);
-            newUser.BackIdImage = await _userService.UploadBackIdImage(request.BackIdImage);
-            newUser.CollegeCardBackImage = await _userService.UploadCollegeCardBackImage(request.CollegeCardBackImage);
-            newUser.CollegeCardFrontImage = await _userService.UploadCollegeCardFrontImage(request.CollegeCardFrontImage);
+            newUser.FrontIdImage = await _userService.UploadUserImages(request.FrontIdImage);
+            newUser.BackIdImage = await _userService.UploadUserImages(request.BackIdImage);
+            newUser.CollegeCardBackImage = await _userService.UploadUserImages(request.CollegeCardBackImage);
+            newUser.CollegeCardFrontImage = await _userService.UploadUserImages(request.CollegeCardFrontImage);
             newUser.PersonalImage = await _userService.UploadPersonalImage(request.PersonalImage);
 
             await _userManager.RemoveFromRoleAsync(newUser, "ViewUser");

@@ -9,25 +9,19 @@ namespace Graduation_Project.Services.Implemention
         private readonly IFileService _fileService;
         private readonly UNITOOLDbContext _uNITOOLDbContext;
         private readonly UserManager<User> _userManager;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEmailsService _emailsService;
-        private readonly IUrlHelper _urlHelper;
         #endregion
         #region Constructor
 
         public UserServices(UserManager<User> userManager,
-                              IHttpContextAccessor httpContextAccessor,
                               IEmailsService emailsService,
                               UNITOOLDbContext applicationDBContext,
-                              IUrlHelper urlHelper,
                               IFileService fileService
             )
         {
             _userManager = userManager;
-            _httpContextAccessor = httpContextAccessor;
             _emailsService = emailsService;
             _uNITOOLDbContext = applicationDBContext;
-            _urlHelper = urlHelper;
             _fileService = fileService;
         }
 
@@ -44,9 +38,9 @@ namespace Graduation_Project.Services.Implemention
             await _uNITOOLDbContext.SaveChangesAsync();
 
         }
-        public async Task<string> UploadFrontIdImage(IFormFile file)
+        public async Task<string> UploadUserImages(IFormFile file)
         {
-            var imageUrl = await _fileService.UploadImage("UserFrontIdImage", file);
+            var imageUrl = await _fileService.UploadImage("UserImages", file);
             switch (imageUrl)
             {
                 case "No Image Uploaded":
@@ -59,52 +53,7 @@ namespace Graduation_Project.Services.Implemention
             }
             return imageUrl;
         }
-        public async Task<string> UploadBackIdImage(IFormFile file)
-        {
-            var imageUrl = await _fileService.UploadImage("UserBackIdImage", file);
-            switch (imageUrl)
-            {
-                case "No Image Uploaded":
-                    return "No Image Uploaded";
-                    break;
-                case "Failed To Upload":
-                    return "Failed To Upload";
-                    break;
-
-            }
-            return imageUrl;
-
-        }
-        public async Task<string> UploadCollegeCardFrontImage(IFormFile file)
-        {
-            var imageUrl = await _fileService.UploadImage("UserCollegeCardFrontImage", file);
-            switch (imageUrl)
-            {
-                case "No Image Uploaded":
-                    return "No Image Uploaded";
-                    break;
-                case "Failed To Upload":
-                    return "Failed To Upload";
-                    break;
-
-            }
-            return imageUrl;
-        }
-        public async Task<string> UploadCollegeCardBackImage(IFormFile file)
-        {
-            var imageUrl = await _fileService.UploadImage("UserdBackImage", file);
-            switch (imageUrl)
-            {
-                case "No Image Uploaded":
-                    return "No Image Uploaded";
-                    break;
-                case "Failed To Upload":
-                    return "Failed To Upload";
-                    break;
-
-            }
-            return imageUrl;
-        }
+      
         public async Task<string> UploadPersonalImage(IFormFile file)
         {
             var imageUrl = await _fileService.UploadImage("UserPersonalImage", file);
@@ -120,6 +69,7 @@ namespace Graduation_Project.Services.Implemention
             }
             return imageUrl;
         }
+   
 
         public async Task<string> CreateAsync(User user, string Password)
         {

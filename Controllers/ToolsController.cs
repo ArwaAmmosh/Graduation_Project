@@ -9,16 +9,14 @@ namespace Graduation_Project.Controllers
     {
         private readonly UNITOOLDbContext _context;
         private readonly CurrentUserService _currentUserService;
-        private readonly IToolServices toolServices;
         private readonly IWebHostEnvironment _env;
 
         
        
-        public ToolsController(UNITOOLDbContext context, CurrentUserService currentUserService, IToolServices _toolServices, IWebHostEnvironment env)
+        public ToolsController(UNITOOLDbContext context, CurrentUserService currentUserService, IWebHostEnvironment env)
         {
             _context = context;
             _currentUserService = currentUserService; 
-            toolServices = _toolServices;
             _env = env;
 
         }
@@ -42,9 +40,9 @@ namespace Graduation_Project.Controllers
                 University = tool.University,
                 Department = tool.Department,
                 Photos = _context.ToolPhotos
-           .Where(tp => tp.ToolId == tool.ToolId)
-           .Select(tp => tp.ToolImages)
-           .ToList()
+                                         .Where(tp => tp.ToolId == tool.ToolId)
+                                         .Select(tp => tp.ToolImages)
+                                          .ToList()
             };
 
             return getToolDto;

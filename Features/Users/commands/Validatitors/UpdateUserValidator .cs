@@ -38,7 +38,7 @@ namespace Graduation_Project.Features.Users.commands.Validatitors
                  .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
                  .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);
 
-            RuleFor(x => x.Univserity)
+            RuleFor(x => x.University)
                  .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
                  .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);
             RuleFor(x => x.BackIdImage)

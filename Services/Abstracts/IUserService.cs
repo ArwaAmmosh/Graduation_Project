@@ -5,10 +5,7 @@ namespace Graduation_Project.Services.Abstracts
 {
     public interface IUserService
     {
-        public Task<string> UploadFrontIdImage( IFormFile file);
-        public Task<string> UploadBackIdImage(IFormFile file);
-        public  Task<string> UploadCollegeCardFrontImage( IFormFile file);
-        public  Task<string> UploadCollegeCardBackImage(IFormFile file);
+        public Task<string> UploadUserImages( IFormFile file);
         public  Task<string> UploadPersonalImage( IFormFile file);
         Task SaveChangesAsync();
         Task UpdateAsync(User entity);

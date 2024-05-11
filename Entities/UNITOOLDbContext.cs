@@ -1,11 +1,7 @@
 ﻿using EntityFrameworkCore.EncryptColumn.Extension;
 using EntityFrameworkCore.EncryptColumn.Interfaces;
 using EntityFrameworkCore.EncryptColumn.Util;
-using Graduation_Project.Entities.Identity;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using System.Reflection;
 
 namespace Graduation_Project.Entities
 {
@@ -17,11 +13,11 @@ namespace Graduation_Project.Entities
         }
         public UNITOOLDbContext(DbContextOptions<UNITOOLDbContext> options) : base(options)
         {
-            // _encryptionProvider = new GenerateEncryptionProvider("8a4dcaaec64d412380fe4b02193cd26f");
+             _encryptionProvider = new GenerateEncryptionProvider("8a4dcaaec64d412380fe4b02193cd26f");
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=.;Database=UNITOOL;Trusted_Connection=True;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=DESKTOP-A0LMSG6\\SD;Database=UNITOOL;Trusted_Connection=True;TrustServerCertificate=True;");
         }
         public DbSet<UserRefreshToken> RefreshTokens { get; set; }
         public DbSet<Tool> Tools { get; set; }
@@ -59,7 +55,7 @@ namespace Graduation_Project.Entities
 
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-           // modelBuilder.UseEncryption(_encryptionProvider);
+            modelBuilder.UseEncryption(_encryptionProvider);
         }
     }
 

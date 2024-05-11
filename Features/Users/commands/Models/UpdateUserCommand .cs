@@ -4,7 +4,7 @@ namespace Graduation_Project.Features.Users.commands.Models
 {
     public class UpdateUserCommand : IRequest<Response<string>>
     {
-        public string Univserity { get; set; }
+        public string University { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Government { get; set; }

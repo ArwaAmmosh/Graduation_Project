@@ -15,6 +15,7 @@ namespace Graduation_Project.Entities.Identity
         public string LastName { get; set; }
         public string University{ get; set; }
         public string? Government { get; set; }
+        [EncryptColumn]
         public string? Code { get; set; }
         public DateTime? BirthDate { get; set; }
         public string? AcademicYear { get; set; }
