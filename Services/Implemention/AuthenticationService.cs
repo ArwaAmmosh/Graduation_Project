@@ -66,7 +66,7 @@ namespace Graduation_Project.Services.Implemention
             return new JwtAuthResult
             {
                 AccessToken = accessToken,
-                refreshToken = refreshToken
+                //refreshToken = refreshToken
             };
         }
 
@@ -218,7 +218,7 @@ namespace Graduation_Project.Services.Implemention
             refreshTokenResult.UserName = jwtToken.Claims.FirstOrDefault(x => x.Type == nameof(UserClaimModel.UserName)).Value;
             refreshTokenResult.TokenString = refreshToken;
             refreshTokenResult.ExpireAt = (DateTime)expiryDate;
-            response.refreshToken = refreshTokenResult;
+           // response.refreshToken = refreshTokenResult;
             return response;
 
         }
@@ -228,11 +228,19 @@ namespace Graduation_Project.Services.Implemention
             if (userId == null || code == null)
                 return "ErrorWhenConfirmEmail";
             var user = await _userManager.FindByIdAsync(userId.ToString());
-            // var confirmEmail = await _userManager.ConfirmEmailAsync(user, code);
+            if (user == null)
+            {
+                return "User Not Found";
+            }
+             //var confirmEmail = await _userManager.ConfirmEmailAsync(user, code);
             var userCode = user.Code;
             //Equal With Code
             if (userCode == code)
-                  return "Success";
+            {
+                user.EmailConfirmed = true;
+                await _unitoolDbContext.SaveChangesAsync();
+                return "Success";
+            }
             return "ErrorWhenConfirmEmail";
 
         }

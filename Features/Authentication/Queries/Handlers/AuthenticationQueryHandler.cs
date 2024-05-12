@@ -40,7 +40,7 @@ namespace Graduation_Project.Features.Authentication.Queries.Handlers
         }
         public async Task<Response<string>> Handle(ConfirmEmailQuery request, CancellationToken cancellationToken)
         {
-            var userId=_currentUserService.GetUserId();
+            var userId= _currentUserService.GetUserId();
             var confirmEmail = await _authenticationService.ConfirmEmail(userId, request.Code);
             if (confirmEmail == "ErrorWhenConfirmEmail")
                 return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.ErrorWhenConfirmEmail]);

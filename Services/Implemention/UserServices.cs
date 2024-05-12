@@ -1,5 +1,6 @@
 ﻿using Graduation_Project.Entities.Identity;
 using Graduation_Project.Services.Abstracts;
+using System.ComponentModel.Design;
 
 namespace Graduation_Project.Services.Implemention
 {
@@ -10,19 +11,25 @@ namespace Graduation_Project.Services.Implemention
         private readonly UNITOOLDbContext _uNITOOLDbContext;
         private readonly UserManager<User> _userManager;
         private readonly IEmailsService _emailsService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IUrlHelper _urlHelper;
         #endregion
         #region Constructor
 
         public UserServices(UserManager<User> userManager,
                               IEmailsService emailsService,
                               UNITOOLDbContext applicationDBContext,
-                              IFileService fileService
+                              IFileService fileService,
+                              IHttpContextAccessor httpContextAccessor,
+                              IUrlHelper urlHelper
             )
         {
             _userManager = userManager;
             _emailsService = emailsService;
             _uNITOOLDbContext = applicationDBContext;
             _fileService = fileService;
+            _httpContextAccessor = httpContextAccessor;
+            _urlHelper = urlHelper;
         }
 
         #endregion
@@ -86,7 +93,7 @@ namespace Graduation_Project.Services.Implemention
                 var chars = "0123456789";
                 var random = new Random();
                 var randomNumber = new string(Enumerable.Repeat(chars, 6).Select(s => s[random.Next(s.Length)]).ToArray());
-                //update User In Database Code
+               // update User In Database Code
                 user.Code = randomNumber;
                 var createResult = await _userManager.CreateAsync(user, Password);
                 //Failed
@@ -94,14 +101,14 @@ namespace Graduation_Project.Services.Implemention
                     return string.Join(",", createResult.Errors.Select(x => x.Description).ToList());
 
                 await _userManager.AddToRoleAsync(user, "ViewUser");
-                //Send Confirm Email
-               // var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-               // var resquestAccessor = _httpContextAccessor.HttpContext.Request;
-               // var returnUrl = resquestAccessor.Scheme + "://" + resquestAccessor.Host + _urlHelper.Action("ConfirmEmail", "Authentication", new { userId = user.Id, code = code });
-               // var message = $"To Confirm Email Click Link: <a href='{returnUrl}'>Link Of Confirmation</a>";
+                ////Send Confirm Email
+                //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                //var resquestAccessor = _httpContextAccessor.HttpContext.Request;
+                //var returnUrl = resquestAccessor.Scheme + "://" + resquestAccessor.Host + _urlHelper.Action("ConfirmEmail", "Authentication", new { userId = user.Id, code = code });
+                //// var message = $"To Confirm Email Click Link: <a href='{returnUrl}'>Link Of Confirmation</a>";
                 //$"/Api/V1/Authentication/ConfirmEmail?userId={user.Id}&code={code}";
-                
-                    var emailTitle = "Welcome to UNITOOL - Confirm Your Email";
+
+                var emailTitle = "Welcome to UNITOOL - Confirm Your Email";
                     var emailBody = $@"
                                    <html lang=""en"">
                                         <head>
