@@ -17,7 +17,7 @@ namespace Graduation_Project.Entities
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=DESKTOP-A0LMSG6\\SD;Database=UNITOOL;Trusted_Connection=True;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=db4934.public.databaseasp.net; Database=db4934; User Id=db4934; Password=Di2=5!xEkH+3; Encrypt=False; MultipleActiveResultSets=True;");
         }
         public DbSet<UserRefreshToken> RefreshTokens { get; set; }
         public DbSet<Tool> Tools { get; set; }

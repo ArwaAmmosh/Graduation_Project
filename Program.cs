@@ -93,9 +93,9 @@ builder.Services.AddTransient<IUrlHelper>(x =>
 });
 builder.Services.AddTransient<AuthFilter>();
 builder.Services.AddTransient<ToolManager>();
-Log.Logger = new LoggerConfiguration()
-              .ReadFrom.Configuration(builder.Configuration).CreateLogger();
-builder.Services.AddSerilog();
+//Log.Logger = new LoggerConfiguration()
+              //.ReadFrom.Configuration(builder.Configuration).CreateLogger();
+//builder.Services.AddSerilog();
 var app = builder.Build();
 app.UseMiddleware<ErrorHandlerMiddleware>();
 using (var scope = app.Services.CreateScope())
@@ -109,11 +109,10 @@ using (var scope = app.Services.CreateScope())
 var options = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
 app.UseRequestLocalization(options.Value);
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 app.UseStaticFiles();
 app.UseHttpsRedirection();
