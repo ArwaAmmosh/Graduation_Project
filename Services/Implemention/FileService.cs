@@ -7,7 +7,7 @@ namespace Graduation_Project.Services.Implemention
     {
         #region Fields
         private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly string _host = "https://localhost:7257/";
+        private readonly string _host = "https://unitoolproject.runasp.net/";
 
         #endregion
         #region Constructor

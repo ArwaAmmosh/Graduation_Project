@@ -13,7 +13,7 @@ namespace Graduation_Project.Controllers
         private readonly UNITOOLDbContext _context;
         private readonly CurrentUserService _currentUserService;
         private readonly IWebHostEnvironment _env;
-        private readonly string _host = "https://localhost:7257/";
+        private readonly string _host = "https://unitoolproject.runasp.net/";
 
 
         public ToolsController(UNITOOLDbContext context, CurrentUserService currentUserService, IWebHostEnvironment env)
