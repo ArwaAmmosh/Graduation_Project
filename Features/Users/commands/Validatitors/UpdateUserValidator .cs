@@ -60,13 +60,16 @@ namespace Graduation_Project.Features.Users.commands.Validatitors
                  .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
                  .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required])
                  .Length(14).WithMessage(_localizer[SharedResourcesKeys.NumberOfRequiredDigits]);
-            RuleFor(x => x.AcadmicYear)
+            RuleFor(x => x.AcademicYear)
                  .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
                  .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);
             RuleFor(x => x.PersonalImage)
                  .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
                  .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);
             RuleFor(x => x.Government)
+                .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
+                .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);
+            RuleFor(x => x.Department)
                 .NotEmpty().WithMessage(_localizer[SharedResourcesKeys.NotEmpty])
                 .NotNull().WithMessage(_localizer[SharedResourcesKeys.Required]);
             RuleFor(x => x.BirthDate)

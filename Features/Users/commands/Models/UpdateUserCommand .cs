@@ -4,11 +4,12 @@ namespace Graduation_Project.Features.Users.commands.Models
 {
     public class UpdateUserCommand : IRequest<Response<string>>
     {
-        public string University { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string University { get; set; }
         public string Government { get; set; }
-        public string AcadmicYear { get; set; }
+        public string AcademicYear { get; set; }
+        public string Department { get; set; }
         public string College { get; set; }
         public string NationalId { get; set; }
         public string PhoneNumber { get; set; }
