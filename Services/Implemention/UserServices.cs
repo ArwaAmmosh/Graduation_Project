@@ -66,8 +66,11 @@ namespace Graduation_Project.Services.Implemention
             {
                 case "No Image Uploaded":
                     return "No Image Uploaded";
+                    break;
                 case "Failed To Upload":
                     return "Failed To Upload";
+                    break;
+
             }
             return imageUrl;
         }
