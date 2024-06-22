@@ -7,7 +7,7 @@ using SharpDX.DXGI;
 namespace Graduation_Project.Features.Authentication.Command.Handlers
 {
     public class AuthenticationCommandHandler : ResponseHandler,
-                                               IRequestHandler<SignInCommand, Response<JwtAuthResult>>,
+                                               IRequestHandler<SignInCommand, Response<LoginResponseDto>>,
                                                IRequestHandler<RefreshTokenCommand, Response<JwtAuthResult>>,
                                                IRequestHandler<SendResetPasswordCommand, Response<string>>,
                                                IRequestHandler<ResetPasswordCommand, Response<string>>
@@ -41,21 +41,45 @@ namespace Graduation_Project.Features.Authentication.Command.Handlers
         #endregion
 
         #region Handle Functions
-        public async Task<Response<JwtAuthResult>> Handle(SignInCommand request, CancellationToken cancellationToken)
+        public async Task<Response<LoginResponseDto>> Handle(SignInCommand request, CancellationToken cancellationToken)
         {
             //Check if user is exist or not
-            var user = await _userManager.FindByNameAsync(request.UserName);
-            //Return The UserName Not Found
-            if (user == null) return BadRequest<JwtAuthResult>(_stringLocalizer[SharedResourcesKeys.UserNameIsNotExist]);
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            //Return The Email Not Found
+            if (user == null)
+            {
+                return BadRequest<LoginResponseDto>(_stringLocalizer[SharedResourcesKeys.UserNameIsNotExist]);
+            }
             //try To Sign in 
             var signInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
             //if Failed Return Passord is wrong
-            if (!signInResult.Succeeded) return BadRequest<JwtAuthResult>(_stringLocalizer[SharedResourcesKeys.PasswordNotCorrect]);
+            if (!signInResult.Succeeded)
+            {
+                return BadRequest<LoginResponseDto>(_stringLocalizer[SharedResourcesKeys.PasswordNotCorrect]);
+            }
             //confirm email
            if (!user.EmailConfirmed)
-                return BadRequest<JwtAuthResult>(_stringLocalizer[SharedResourcesKeys.EmailNotConfirmed]);
+                return BadRequest<LoginResponseDto>(_stringLocalizer[SharedResourcesKeys.EmailNotConfirmed]);
             //Generate Token
-            var result = await _authenticationService.GetJWTToken(user);
+            var token = await _authenticationService.GetJWTToken(user);
+            var result = new LoginResponseDto
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                NationalId = user.NationalId,
+                University = user.University,
+                College = user.College,
+                Department = user.Department,
+                Government = user.Government,
+                AcademicYear = user.AcademicYear,
+                BirthDate = user.BirthDate,
+                PersonalImage = user.PersonalImage,
+                BackIdImage = user.BackIdImage,
+                FrontIdImage = user.FrontIdImage,
+                CollegeCardBackImage = user.CollegeCardBackImage,
+                CollegeCardFrontImage = user.CollegeCardFrontImage,
+                AccessToken = token.AccessToken
+            };
             //return Token 
             return Success(result);
         }
