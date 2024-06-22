@@ -2,6 +2,7 @@
 
 public class LoginResponseDto
 {
+    public int Id { get; set; }
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public string? University { get; set; }
@@ -16,5 +17,6 @@ public class LoginResponseDto
     public string? CollegeCardBackImage { get; set; }
     public string? PersonalImage { get; set; }
     public string? NationalId { get; set; }
+    public bool IsComplete { get; set; }
     public string? AccessToken { get; set; }
 }

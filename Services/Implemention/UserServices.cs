@@ -1,4 +1,5 @@
-﻿using Graduation_Project.Entities.Identity;
+﻿using Graduation_Project.Entities;
+using Graduation_Project.Entities.Identity;
 using Graduation_Project.Services.Abstracts;
 using System.ComponentModel.Design;
 
@@ -128,8 +129,11 @@ namespace Graduation_Project.Services.Implemention
 
                     //message or body
                     await _emailsService.SendEmail(user.Email, emailBody, "ConFirm Email");
+                     user.IsComplete = false;
+                await SaveChangesAsync();
 
-                    await trans.CommitAsync();
+
+                await trans.CommitAsync();
                     return "Success";
                 }
                 catch (Exception)

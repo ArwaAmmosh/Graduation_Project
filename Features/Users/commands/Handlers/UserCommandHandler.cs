@@ -78,6 +78,7 @@ namespace Graduation_Project.Features.Users.commands.Handlers
             newUser.CollegeCardBackImage = await _userService.UploadUserImages(request.CollegeCardBackImage);
             newUser.CollegeCardFrontImage = await _userService.UploadUserImages(request.CollegeCardFrontImage);
             newUser.PersonalImage = await _userService.UploadPersonalImage(request.PersonalImage);
+            newUser.IsComplete = true;
 
             await _userManager.RemoveFromRoleAsync(newUser, "ViewUser");
             await _userManager.AddToRoleAsync(newUser, "AdmittedUser");

@@ -173,6 +173,22 @@ namespace Graduation_Project.Controllers
 
             return Ok(paginatedTools);
         }
+        // GET: api/Tools/categories
+        [HttpGet("categories")]
+        public async Task<ActionResult<List<string>>> GetToolCategories()
+        {
+            var categories = await _context.Tools
+                .Select(t => t.Category)
+                .Distinct()
+                .ToListAsync();
+
+            if (categories == null || categories.Count == 0)
+            {
+                return NotFound("No categories found.");
+            }
+
+            return Ok(categories);
+        }
 
         // Search  // GET: api/Tool/search?name={Name}
         [HttpGet("searchByName")]

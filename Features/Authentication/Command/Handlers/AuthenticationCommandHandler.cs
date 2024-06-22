@@ -64,6 +64,7 @@ namespace Graduation_Project.Features.Authentication.Command.Handlers
             var token = await _authenticationService.GetJWTToken(user);
             var result = new LoginResponseDto
             {
+                Id=user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 NationalId = user.NationalId,
@@ -78,6 +79,7 @@ namespace Graduation_Project.Features.Authentication.Command.Handlers
                 FrontIdImage = user.FrontIdImage,
                 CollegeCardBackImage = user.CollegeCardBackImage,
                 CollegeCardFrontImage = user.CollegeCardFrontImage,
+                IsComplete=user.IsComplete,
                 AccessToken = token.AccessToken
             };
             //return Token 

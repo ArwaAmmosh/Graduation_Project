@@ -25,7 +25,8 @@ namespace Graduation_Project.Entities.Identity
         public string? CollegeCardBackImage { get; set; }
         public string? PersonalImage { get; set; }
         public string? NationalId { get; set; }
-        public bool IsComplete = false;
+
+        public bool IsComplete { get; set; }
         public ICollection<Tool>? Tool { get; set; }
         public ICollection<FavoriteTool>? FavoriteTool { get; set; }
 

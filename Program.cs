@@ -93,8 +93,22 @@ builder.Services.AddTransient<IUrlHelper>(x =>
 });
 builder.Services.AddTransient<AuthFilter>();
 builder.Services.AddTransient<ToolManager>();
+#region AllowCORS
+var CORS = "_cors";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: CORS,
+                      policy =>
+                      {
+                          policy.AllowAnyHeader();
+                          policy.AllowAnyMethod();
+                          policy.AllowAnyOrigin();
+                      });
+});
+
+#endregion
 //Log.Logger = new LoggerConfiguration()
-              //.ReadFrom.Configuration(builder.Configuration).CreateLogger();
+//.ReadFrom.Configuration(builder.Configuration).CreateLogger();
 //builder.Services.AddSerilog();
 var app = builder.Build();
 app.UseMiddleware<ErrorHandlerMiddleware>();
@@ -117,6 +131,7 @@ app.UseSwaggerUI();
 app.UseStaticFiles();
 app.UseHttpsRedirection();
 app.UseAuthentication();
+app.UseCors(CORS);
 app.UseAuthorization();
 app.UseMiddleware<ExceptionMiddleware>();
 app.MapControllers();
