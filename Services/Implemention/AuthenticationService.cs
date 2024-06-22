@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Identity;
 using EntityFrameworkCore.EncryptColumn.Interfaces;
 using EntityFrameworkCore.EncryptColumn.Util;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
-using Graduation_Project.Features.Users.Queries.Results;
 
 namespace Graduation_Project.Services.Implemention
 {
@@ -22,7 +21,6 @@ namespace Graduation_Project.Services.Implemention
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly UNITOOLDbContext _unitoolDbContext;
         private readonly IEmailsService _emailService;
-        private readonly IMapper _mapper;
        // private readonly IEncryptionProvider _encryptionProvider;
 
         #endregion 
@@ -32,16 +30,13 @@ namespace Graduation_Project.Services.Implemention
                                      UserManager<User> userManager,
                                      IRefreshTokenRepository refreshTokenRepository,
                                      UNITOOLDbContext unitoolDbContext,
-                                     IEmailsService emailService,
-                                     IMapper mapper)
+                                     IEmailsService emailService)
         {
             _jwtSettings = jwtSettings;
             _userManager = userManager;
             _refreshTokenRepository = refreshTokenRepository;
             _unitoolDbContext = unitoolDbContext;
             _emailService = emailService;
-            _mapper = mapper;
-
             //_encryptionProvider = new GenerateEncryptionProvider("8a4dcaaec64d412380fe4b02193cd26f");
 
         }
@@ -67,14 +62,10 @@ namespace Graduation_Project.Services.Implemention
                 UserId=user.Id
 
             };
-            //var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id==request.Id);
-          //  var userinfo = await _userManager.FindByIdAsync(_currentUserService.GetUserId().ToString());
-            var result = _mapper.Map<GetUserByIdResponse>(user);
             await _refreshTokenRepository.AddAsync(userRefreshToken);
             return new JwtAuthResult
             {
                 AccessToken = accessToken,
-                Getuser=result
                 //refreshToken = refreshToken
             };
         }

@@ -7,7 +7,7 @@ namespace Graduation_Project.Features.Authorization.Queries.Handlers
 {
     public class RoleQueryHandler:ResponseHandler,
                                   IRequestHandler<GetRolesListQuery,Response<List<GetRolesListResult>>>,
-                                  IRequestHandler<GetRoleByIdQuery, Response<GetRoleByIdResult>>,
+                                  IRequestHandler<GetRoleByIdQuery, Response<GetUserByIdResult>>,
                                  IRequestHandler<MangeUserRolesQuery,Response<MangeUserRolesResult>>
 
 
@@ -39,15 +39,15 @@ namespace Graduation_Project.Features.Authorization.Queries.Handlers
 
         }
 
-        public async Task<Response<GetRoleByIdResult>> Handle(GetRoleByIdQuery request, CancellationToken cancellationToken)
+        public async Task<Response<GetUserByIdResult>> Handle(GetRoleByIdQuery request, CancellationToken cancellationToken)
         {
             var role = await _authorizationService.GetRoleById(request.Id);
             if(role == null)
             {
-                return NotFound<GetRoleByIdResult>(_stringLocalizer[SharedResourcesKeys.RoleNotExist]);
+                return NotFound<GetUserByIdResult>(_stringLocalizer[SharedResourcesKeys.RoleNotExist]);
             }
             
-            var result = _mapper.Map<GetRoleByIdResult>(role);
+            var result = _mapper.Map<GetUserByIdResult>(role);
             return Success(result);
         }
 
