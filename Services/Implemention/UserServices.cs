@@ -78,7 +78,6 @@ namespace Graduation_Project.Services.Implemention
 
         public async Task<string> CreateAsync(User user, string Password)
         {
-
             var trans = await _uNITOOLDbContext.Database.BeginTransactionAsync();
             try
             {
@@ -86,7 +85,6 @@ namespace Graduation_Project.Services.Implemention
                 var existUser = await _userManager.FindByEmailAsync(user.Email);
                 //email is Exist
                 if (existUser != null) return "EmailIsExist";
-
                 //if username is Exist
                 user.UserName = user.FirstName + user.LastName;
                 var userByUserName = await _userManager.FindByNameAsync(user.UserName);
@@ -102,17 +100,9 @@ namespace Graduation_Project.Services.Implemention
                 //Failed
                 if (!createResult.Succeeded)
                     return string.Join(",", createResult.Errors.Select(x => x.Description).ToList());
-
                 await _userManager.AddToRoleAsync(user, "ViewUser");
-                ////Send Confirm Email
-                //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                //var resquestAccessor = _httpContextAccessor.HttpContext.Request;
-                //var returnUrl = resquestAccessor.Scheme + "://" + resquestAccessor.Host + _urlHelper.Action("ConfirmEmail", "Authentication", new { userId = user.Id, code = code });
-                //// var message = $"To Confirm Email Click Link: <a href='{returnUrl}'>Link Of Confirmation</a>";
-                //$"/Api/V1/Authentication/ConfirmEmail?userId={user.Id}&code={code}";
-
                 var emailTitle = "Welcome to UNITOOL - Confirm Your Email";
-                    var emailBody = $@"
+                var emailBody = $@"
                                    <html lang=""en"">
                                         <head>
                                              <meta charset=""UTF-8"">
@@ -135,9 +125,6 @@ namespace Graduation_Project.Services.Implemention
                                                </div>
                                            </body>
                                            </html> ";
-                                     
-
-
 
                     //message or body
                     await _emailsService.SendEmail(user.Email, emailBody, "ConFirm Email");

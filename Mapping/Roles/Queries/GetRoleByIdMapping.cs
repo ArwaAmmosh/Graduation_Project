@@ -4,7 +4,7 @@
     {
         public void GetRoleByIdMapping()
         {
-            CreateMap<Role, GetRoleByIdResult>();
+            CreateMap<Role, GetUserByIdResult>();
         }
     }
 }
