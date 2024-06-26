@@ -4,7 +4,7 @@ using Graduation_Project.Resource;
 using Microsoft.Extensions.Localization;
 using SharpDX.DXGI;
 
-namespace Graduation_Project.Features.Users.commands.Validatitors
+/*namespace Graduation_Project.Features.Users.commands.Validatitors
 {
     public class UpdateUserValidator : AbstractValidator<UpdateUserCommand>
     {
@@ -96,4 +96,4 @@ namespace Graduation_Project.Features.Users.commands.Validatitors
         #endregion
     }
 }
-
+*/

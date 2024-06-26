@@ -49,8 +49,8 @@ namespace Graduation_Project.Features.Users.Queries.Handler
 
         public async Task<Response<GetUserByIdResponse>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
-            //var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id==request.Id);
-            var user = await _userManager.FindByIdAsync(_currentUserService.GetUserId().ToString());
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id==request.Id);
+            //var user = await _userManager.FindByIdAsync(_currentUserService.GetUserId().ToString());
             if (user == null) return NotFound<GetUserByIdResponse>(_sharedResources[SharedResourcesKeys.NotFound]);
             var result = _mapper.Map<GetUserByIdResponse>(user);
             return Success(result);

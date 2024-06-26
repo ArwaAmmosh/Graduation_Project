@@ -74,12 +74,16 @@ namespace Graduation_Project.Controllers
                         .Where(tp => tp.ToolId == t.ToolId)
                         .Select(tp => tp.ToolImages)
                         .ToList()
-                })
-                .ToList(); // Materialize the query into a list
+                }); // Materialize the query into a list
+            var totalItems = await toolsQuery.CountAsync();
+            var paginatedTools = await toolsQuery
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
-            var paginatedTools = PaginatedResult<GetToolDto>.Success(toolsQuery, toolsQuery.Count(), pageNumber, pageSize);
+            var paginatedResult = PaginatedResult<GetToolDto>.Success(paginatedTools, totalItems, pageNumber, pageSize);
 
-            return Ok(paginatedTools);
+            return Ok(paginatedResult);
         }
 
         //GET tool user ADD
@@ -139,12 +143,17 @@ namespace Graduation_Project.Controllers
                         .Select(tp => tp.ToolImages)
                         .ToList()
 
-                })
-                .ToList(); // Materialize the query into a list
+                }); // Materialize the query into a list
 
-            var paginatedTools = PaginatedResult<GetToolDto>.Success(toolsQuery, toolsQuery.Count(), pageNumber, pageSize);
+            var totalItems = await toolsQuery.CountAsync();
+            var paginatedTools = await toolsQuery
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
-            return Ok(paginatedTools);
+            var paginatedResult = PaginatedResult<GetToolDto>.Success(paginatedTools, totalItems, pageNumber, pageSize);
+
+            return Ok(paginatedResult);
         }
 
         // GET: api/Tool/University/{University}
@@ -169,11 +178,16 @@ namespace Graduation_Project.Controllers
                         .Select(tp => tp.ToolImages)
                         .ToList()
 
-                })
-                .ToList();
-            var paginatedTools = PaginatedResult<GetToolDto>.Success(toolsQuery, toolsQuery.Count(), pageNumber, pageSize);
+                });
+            var totalItems = await toolsQuery.CountAsync();
+            var paginatedTools = await toolsQuery
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
-            return Ok(paginatedTools);
+            var paginatedResult = PaginatedResult<GetToolDto>.Success(paginatedTools, totalItems, pageNumber, pageSize);
+
+            return Ok(paginatedResult);
         }
         // GET: api/Tools/categories
         [HttpGet("categories")]
@@ -213,18 +227,22 @@ namespace Graduation_Project.Controllers
                     Price = t.Price,
                     College = t.College,
                     University = t.University,
-                    Department=t.Department,
-                    Acadmicyear=t.AcademicYear,
+                    Department = t.Department,
+                    Acadmicyear = t.AcademicYear,
                     Photos = _context.ToolPhotos
                         .Where(tp => tp.ToolId == t.ToolId)
                         .Select(tp => tp.ToolImages)
                         .ToList()
-                })
-                .ToList(); // Materialize the query into a list
+                });
+            var totalItems = await toolsQuery.CountAsync();
+            var paginatedTools = await toolsQuery
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
-            var paginatedTools = PaginatedResult<GetToolDto>.Success(toolsQuery, toolsQuery.Count(), pageNumber, pageSize);
+            var paginatedResult = PaginatedResult<GetToolDto>.Success(paginatedTools, totalItems, pageNumber, pageSize);
 
-            return Ok(paginatedTools);
+            return Ok(paginatedResult);
         }
 
         [HttpPut("UpdateTool/{id}")]

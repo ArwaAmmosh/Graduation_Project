@@ -22,9 +22,10 @@ namespace Graduation.Controllers
             return Ok(response);
         }
         [HttpGet("GetUserById")]
-        public async Task<IActionResult> GetUserById()
+        [AllowAnonymous]
+        public async Task<IActionResult> GetUserById([FromQuery] int id)
         {
-            var response = await Mediator.Send(new GetUserByIdQuery());
+            var response = await Mediator.Send(new GetUserByIdQuery() { Id = id });
             return Ok(response);
         }
         [HttpPut("UpdateUserInformation")]
