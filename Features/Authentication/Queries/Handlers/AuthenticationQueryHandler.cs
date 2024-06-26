@@ -44,6 +44,8 @@ namespace Graduation_Project.Features.Authentication.Queries.Handlers
             var confirmEmail = await _authenticationService.ConfirmEmail(userId, request.Code);
             if (confirmEmail == "ErrorWhenConfirmEmail")
                 return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.ErrorWhenConfirmEmail]);
+           else if (confirmEmail == "NotCorrect")
+                return BadRequest<string>(_stringLocalizer[SharedResourcesKeys.NotCorrect]);
             return Success<string>(_stringLocalizer[SharedResourcesKeys.ConfirmEmailDone]);
         }
 

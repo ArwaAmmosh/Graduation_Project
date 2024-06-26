@@ -59,12 +59,6 @@
         public const string FailedToUploadImage = "FailedToUploadImage";
         public const string NumberOfRequiredDigits = "Number Of Digits Must Be 14";
         public const string FaildToAddGuestInformation = "FaildToAddGuestInformation";
-
-
-
-
-
-
-
+        public const string NotCorrect = "NotCorrect";
     }
 }

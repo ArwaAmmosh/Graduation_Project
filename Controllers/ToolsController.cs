@@ -45,6 +45,7 @@ namespace Graduation_Project.Controllers
                 College = tool.College,
                 University = tool.University,
                 Department = tool.Department,
+                Acadmicyear=tool.AcademicYear,
                 Photos = _context.ToolPhotos
                                          .Where(tp => tp.ToolId == tool.ToolId)
                                          .Select(tp => tp.ToolImages)
@@ -162,6 +163,7 @@ namespace Graduation_Project.Controllers
                     Price = t.Price,
                     College = t.College,
                     University = t.University,
+                    Acadmicyear=t.AcademicYear,
                     Photos = _context.ToolPhotos
                         .Where(tp => tp.ToolId == t.ToolId)
                         .Select(tp => tp.ToolImages)
@@ -211,6 +213,8 @@ namespace Graduation_Project.Controllers
                     Price = t.Price,
                     College = t.College,
                     University = t.University,
+                    Department=t.Department,
+                    Acadmicyear=t.AcademicYear,
                     Photos = _context.ToolPhotos
                         .Where(tp => tp.ToolId == t.ToolId)
                         .Select(tp => tp.ToolImages)
@@ -425,6 +429,7 @@ namespace Graduation_Project.Controllers
                     University = t.University,
                     Price = t.Price,
                     Department = t.Department,
+                    Acadmicyear=t.AcademicYear,
                     Photos = _context.ToolPhotos
                         .Where(tp => tp.ToolId == t.ToolId)
                         .Select(tp => tp.ToolImages)

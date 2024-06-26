@@ -235,13 +235,21 @@ namespace Graduation_Project.Services.Implemention
              //var confirmEmail = await _userManager.ConfirmEmailAsync(user, code);
             var userCode = user.Code;
             //Equal With Code
-            if (userCode == code)
+            if (userCode != code)
+            {
+                return "NotCorrect";
+
+            }
+            else if (userCode == code)
             {
                 user.EmailConfirmed = true;
                 await _unitoolDbContext.SaveChangesAsync();
                 return "Success";
+
             }
+
             return "ErrorWhenConfirmEmail";
+
 
         }
 
