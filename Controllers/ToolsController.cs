@@ -109,17 +109,20 @@ namespace Graduation_Project.Controllers
                         .Where(tp => tp.ToolId == t.ToolId)
                         .Select(tp => tp.ToolImages)
                         .ToList()
-                })
-                .ToList();
+                });  // Materialize the query into a list
+            var paginatedTool = await toolsQuery
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
 
             // Count the total number of tools associated with the current user
             var userToolsCount = await _context.Tools
                 .Where(t => t.UserId == userId)
                 .CountAsync();
+            var paginatedResult = PaginatedResult<GetToolDto>.Success(paginatedTool, userToolsCount, pageNumber, pageSize);
 
-            var paginatedTools = PaginatedResult<GetToolDto>.Success(toolsQuery, userToolsCount, pageNumber, pageSize);
-
-            return Ok(paginatedTools);
+            return Ok(paginatedResult);
         }
 
 
