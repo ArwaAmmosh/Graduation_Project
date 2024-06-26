@@ -15,28 +15,42 @@ namespace Graduation_Project.Controllers
         private readonly CurrentUserService _currentUserService;
         private readonly IWebHostEnvironment _env;
         private readonly IFileService _fileService;
+        private readonly UserManager<User> _userManager;
         private readonly string _host = "https://unitoolproject.runasp.net/";
 
 
-        public ToolsController(UNITOOLDbContext context, CurrentUserService currentUserService, IWebHostEnvironment env,IFileService fileService)
+        public ToolsController(UNITOOLDbContext context, CurrentUserService currentUserService, IWebHostEnvironment env,IFileService fileService, IMapper mapper,
+                                  UserManager<User> userManager)
         {
             _context = context;
             _currentUserService = currentUserService; 
             _env = env;
             _fileService = fileService;
+            _userManager = userManager;
 
         }
         // GET: api/Tools/{id}
         [HttpGet("{id}", Name = "GetTool")]
-        public async Task<ActionResult<GetToolDto>> GetTool(int id)
+        public async Task<ActionResult<DetailsOfToolDto>> GetTool(int id)
         {
             var tool = await _context.Tools.FindAsync(id);
             if (tool == null)
             {
                 return NotFound();
             }
-            var getToolDto = new GetToolDto
+            var user = await _userManager.Users.FirstOrDefaultAsync(u=>u.Id==tool.UserId);
+            var userinfo = new userData
             {
+                FirstName=user.FirstName,
+                LastName=user.LastName,
+                College=user.College,
+                Email=user.Email,
+                PhoneNumber=user.PhoneNumber
+
+            };
+            var detailsOfToolDto = new DetailsOfToolDto
+            {
+                user=userinfo,
                 ToolId = tool.ToolId,
                 Name = tool.Name,
                 Description = tool.Description,
@@ -49,10 +63,11 @@ namespace Graduation_Project.Controllers
                 Photos = _context.ToolPhotos
                                          .Where(tp => tp.ToolId == tool.ToolId)
                                          .Select(tp => tp.ToolImages)
-                                          .ToList()
+                                          .ToList(),
+                
             };
 
-            return getToolDto;
+            return detailsOfToolDto;
 
 
         }
